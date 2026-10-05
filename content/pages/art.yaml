@@ -22,7 +22,7 @@
 hero: 
   portrait:
     # A file in public/media, or a full https:// address.
-    image: /media/portrait.JPG
+    image: /media/portrait.jpg
     alt: Reference portrait photograph, not Yujin Kim.
     # The greeting, which is the page's own heading.
     lead: Hello, I'm Yujin!
