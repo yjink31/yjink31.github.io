@@ -2,7 +2,6 @@ type AutoplayState = {
   autoplay: boolean
   inView: boolean
   hidden: boolean
-  reducedMotion: boolean
   saveData: boolean
   manualPause: boolean
   muted: boolean
@@ -10,7 +9,7 @@ type AutoplayState = {
 }
 
 export function shouldAutoplay(state: AutoplayState) {
-  return state.autoplay && state.inView && !state.hidden && !state.reducedMotion
+  return state.autoplay && state.inView && !state.hidden
     && !state.saveData && !state.manualPause && state.muted && !state.failed
 }
 

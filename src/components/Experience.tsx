@@ -43,7 +43,6 @@ export function ExperienceCursor() {
     const element = root.current
     if (!element) return
     const fine = window.matchMedia('(pointer: fine) and (hover: hover)')
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
     let surface: HTMLElement | null = null
     let lastX = 0
     let lastY = 0
@@ -94,7 +93,7 @@ export function ExperienceCursor() {
       if (at) updateTarget(at)
     }
     const move = (event: PointerEvent) => {
-      if (!canUsePointerEffects({ enabled: true, reducedMotion: reduced.matches, finePointer: fine.matches, hover: fine.matches, pointerType: event.pointerType })) {
+      if (!canUsePointerEffects({ enabled: true, finePointer: fine.matches, hover: fine.matches, pointerType: event.pointerType })) {
         hide(); return
       }
       lastX = event.clientX
@@ -123,7 +122,7 @@ export function ExperienceCursor() {
     const keyboard = (event: KeyboardEvent) => { if (event.key === 'Tab') hide() }
     const leave = (event: PointerEvent) => { if (!event.relatedTarget) hide() }
     const syncHover = () => { if (visible) syncAt(lastX, lastY) }
-    const preferences = () => { if (!fine.matches || reduced.matches) hide() }
+    const preferences = () => { if (!fine.matches) hide() }
     const observer = new MutationObserver(syncHover)
     observer.observe(document.body, { subtree: true, childList: true, attributes: true,
       attributeFilter: ['data-cursor', 'aria-expanded', 'disabled', 'open'] })
@@ -135,7 +134,6 @@ export function ExperienceCursor() {
     window.addEventListener('blur', hide)
     window.addEventListener('keydown', keyboard)
     fine.addEventListener('change', preferences)
-    reduced.addEventListener('change', preferences)
     return () => {
       hide(); observer.disconnect()
       window.removeEventListener('pointermove', move)
@@ -146,7 +144,6 @@ export function ExperienceCursor() {
       window.removeEventListener('blur', hide)
       window.removeEventListener('keydown', keyboard)
       fine.removeEventListener('change', preferences)
-      reduced.removeEventListener('change', preferences)
     }
     // The cursor owns no route state. Re-running this effect on navigation would hide it
     // through the cleanup and leave it hidden until the next pointer move, which is the

@@ -155,19 +155,28 @@ test('history router behavior with mocked browser APIs', async (suite) => {
     assert.equal(focused, title)
   })
 
-  await suite.test('reduced motion bypasses view transitions even when the API exists', () => {
+  await suite.test('the OS animation setting does not disable view transitions', async () => {
+    // Motion is unconditional: a visitor whose operating system asks for reduced motion
+    // still gets the same route choreography, so the preference is never read here.
+    let finish = () => {}
+    const finished = new Promise<void>((resolve) => { finish = resolve })
     let calls = 0
     fakeDocument.startViewTransition = (render) => {
       calls++
       render()
-      return { ready: Promise.resolve(), finished: Promise.resolve(), skipTransition() {} }
+      return { ready: Promise.resolve(), finished, skipTransition() {} }
     }
     reducedMotion = true
     navigate('/research')
-    assert.equal(calls, 0)
+    assert.equal(calls, 1)
     assert.equal(location.pathname, '/research')
     assert.equal(focused, title)
     reducedMotion = false
+    finish()
+    await finished
+    await Promise.resolve()
+    assert.equal(fakeDocument.documentElement.dataset.transition, undefined)
+    fakeDocument.startViewTransition = undefined
   })
 
   await suite.test('interrupted transition callbacks cannot reset the newer destination', () => {

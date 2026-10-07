@@ -101,13 +101,35 @@ test('ambient wash and grain stay behind content and never intercept input', () 
   assert.match(css, /mask-image: url\("data:image\/svg\+xml/)
 })
 
-test('scroll hairline is scroll-driven, and rests at zero without support or under reduced motion', () => {
+test('scroll hairline is scroll-driven, and rests at zero where the timeline is unsupported', () => {
   const rule = css.match(/\.scroll-progress \{([^}]+)\}/)![1]
   assert.match(rule, /transform: scaleX\(0\)/)
   assert.match(rule, /pointer-events: none/)
   assert.match(css, /@supports \(animation-timeline: scroll\(\)\)/)
   assert.match(css, /animation-timeline: scroll\(root block\)/)
   assert.match(app, /<div className="scroll-progress" aria-hidden="true" \/>/)
+})
+
+test('motion runs for every visitor instead of following the OS animation setting', () => {
+  // The choreography is part of the design, so it is deliberately not gated on the operating
+  // system's animation setting: no `prefers-reduced-motion` query anywhere in the stylesheet,
+  // and no blanket rule that switches animation and transition off. The comment that records
+  // this decision lives in the stylesheet too, so the query form is what is checked.
+  assert.doesNotMatch(css, /prefers-reduced-motion\s*:/)
+  assert.doesNotMatch(css, /\*, \*::before, \*::after \{ animation/)
+  assert.match(css, /\n\.enter \{ animation: enter 600ms var\(--ease-out-expo\) both; \}/)
+  // The one blanket rule left belongs to the artwork handoff, which replaces entrance
+  // effects with the snapshot choreography for the lifetime of that route.
+  assert.match(css, /\.transition-static, \.transition-static \* \{ animation: none !important; \}/)
+  // Nothing in JavaScript reads the preference either: the app's reveal observer, the cursor,
+  // image arrivals, playback, the atmosphere, and the router all run unconditionally.
+  for (const file of ['src/App.tsx', 'src/components/Experience.tsx', 'src/components/Media.tsx',
+    'src/components/VideoPlayer.tsx', 'src/components/MeAtmosphere.tsx', 'src/lib/router.ts']) {
+    assert.doesNotMatch(readFileSync(new URL(`../${file}`, import.meta.url), 'utf8'), /prefers-reduced-motion\s*:/, file)
+  }
+  // The pointer and autoplay policies take capability and safety as inputs, not motion.
+  assert.doesNotMatch(readFileSync(new URL('../src/lib/interaction-policy.ts', import.meta.url), 'utf8'), /reducedMotion/)
+  assert.doesNotMatch(readFileSync(new URL('../src/lib/media-policy.ts', import.meta.url), 'utf8'), /reducedMotion/)
 })
 
 test('the document scrollbar is hidden so the scroll hairline is the only affordance', () => {

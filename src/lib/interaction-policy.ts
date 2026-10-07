@@ -1,11 +1,11 @@
-export function canUsePointerEffects({ enabled, reducedMotion, finePointer, hover, pointerType = 'mouse' }: {
+export function canUsePointerEffects({ enabled, finePointer, hover, pointerType = 'mouse' }: {
   enabled: boolean
-  reducedMotion: boolean
   finePointer: boolean
   hover: boolean
   pointerType?: string
 }) {
-  return enabled && !reducedMotion && finePointer && hover && pointerType === 'mouse'
+  // Pointer capability only: the motion preference never enters this decision.
+  return enabled && finePointer && hover && pointerType === 'mouse'
 }
 
 export function pointerOffset(x: number, y: number, rect: { left: number; top: number; width: number; height: number }, strength: number) {

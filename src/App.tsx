@@ -66,8 +66,9 @@ export default function App() {
     document.querySelector('meta[name="description"]')?.setAttribute('content', `${site.name}: ${title.toLowerCase()}. ${site.tagline}`)
   }, [pathname, current, route.page, work?.title])
 
+  // Reveals run for every visitor: the site's motion is not gated on the operating
+  // system's animation setting, so the observer is the only condition here.
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     if (!('IntersectionObserver' in window)) return
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {

@@ -174,7 +174,7 @@ Clicking an artwork carries the same image from its collection position into a l
 - Facts sit in a compact, readable block. The full description can be longer than a landing-page paragraph because understanding the work is this view's purpose.
 - Offer an explicit **Inspect work** action for the high-resolution image. Use a focus-managed dialog only if needed, with zoom buttons, keyboard pan, Escape to close, and an obvious close control. Never make drag or pinch the only way to inspect.
 - **Back to Art** returns to the originating artwork and restores focus. Browser Back should do the same.
-- Reduced motion makes the registration instant. Unsupported browsers receive the complete static detail page.
+- The registration is instant wherever the View Transition API is absent. A browser that supports it animates for every visitor, whatever the operating system's animation setting says (see the motion contract).
 - **Mobile:** title and essential facts remain near the image; description and close-ups follow vertically. No pinned facts column or overflowed horizontal stage.
 
 ### Music: time and attention
@@ -195,7 +195,7 @@ Music
 - Meet the required autoplay behavior with `muted`, `playsInline`, and `autoplay`; include a poster and usable Pause/Play control. Autoplay with sound is not promised because browsers prohibit it in many cases.
 - Start muted playback only when the featured video is meaningfully visible. Pause offscreen and when the tab is hidden. Never autoplay the lower-page videos.
 - **Play sound** is an explicit action. Unmuting or starting another recording pauses competing media. The site never has two audio sources playing together.
-- Under reduced motion or a detectable data-saving preference, start from the poster with manual Play. If autoplay is blocked, that same state appears naturally.
+- With a detectable data-saving preference, start from the poster with manual Play. If autoplay is blocked, that same state appears naturally.
 - Experience text uses real supplied facts. Do not assume instrument, conservatory, awards, repertoire authorship, or professional role from placeholder labels.
 - Include the supplied examples **Bach prelude**, **viola**, and **concerto** once real media and accurate titles are available. Treat these as content requests, not verified recordings.
 - Captions sit below media. Provide accessible playback names, duration when known, transcripts or captions where relevant, and performance context outside the image.
@@ -249,7 +249,7 @@ Durations are design targets, not measured results. Animate only transforms and 
 - No scroll hijacking, smooth-scroll replacement, pinned horizontal travel, infinite marquees, or endless background motion in the core plan.
 - No React state updates every pointer frame, `window.addEventListener('scroll')`, or animation loops that update React state.
 - Each observer, media listener, and animation has a cleanup path compatible with StrictMode.
-- Native view transitions must also be explicitly disabled under `prefers-reduced-motion`; disabling CSS entrances alone is insufficient.
+- **Motion is unconditional** (site owner's decision, 2026-10-07). No animation, transition, view transition, autoplay, or cursor effect is gated on `prefers-reduced-motion`, and there is no blanket rule that switches motion off. This supersedes the earlier reduced-motion policy; the capability fallbacks in this contract still apply, and the pointer and autoplay policies keep their safety conditions.
 - Essential content is visible without animation support or a reveal observer. Progressive enhancement must not leave images or text at opacity zero.
 
 ## Asset and content brief
@@ -335,7 +335,7 @@ Documentation review can verify intentions; only the implemented interface can v
 - [x] Bespoke aesthetic labeled honestly; installed dependencies distinguished from possible additions.
 - [x] One accent, one sharp-corner system, and one site-wide theme policy specified.
 - [x] Every multi-column composition has an explicit mobile fallback.
-- [x] Motion has a content purpose, a static fallback, and a reduced-motion policy.
+- [x] Motion has a content purpose, a static fallback, and an explicit, unconditional motion policy.
 - [x] Real asset needs and authorship constraints documented; no fake works or factual claims.
 - [x] No decorative eyebrows, numbered image labels, scroll cues, marquees, status dots, local-time strips, photo tags, or fake product panels planned.
 - [x] Link vocabulary is consistent; no competing labels for the same CTA intent.
@@ -355,7 +355,7 @@ Documentation review can verify intentions; only the implemented interface can v
 - [ ] Page-level theme is stable on load and navigation; no mid-page theme inversion or media recoloring.
 - [ ] Review at 360px, 390px, 768px, 1024px, and 1440px, plus 200% zoom. No horizontal overflow, clipped names, or hidden controls.
 - [ ] Keyboard-only use, focus return, screen-reader labels, direct detail links, browser history, and media controls are tested.
-- [ ] Reduced motion disables entrances and view-transition choreography; blocked autoplay and failed media have usable recovery paths.
+- [ ] Motion runs for every visitor regardless of the operating system's animation setting; blocked autoplay and failed media have usable recovery paths.
 - [ ] Visible copy, captions, alt text, facts, credits, and metadata are reread. Search for forbidden dash characters and decorative micro-labels.
 - [ ] Run `npm run build` for typecheck/build and `npm run lint`; add and run relevant tests when interaction code is introduced. No test suite currently exists.
 - [ ] Run Lighthouse against the production build on all four pages and an artwork detail in both themes. Targets: LCP < 2.5s, INP < 200ms, CLS < 0.1. Confirm INP with real interaction or field measurement; Lighthouse alone is not proof of field INP.
@@ -369,7 +369,7 @@ Documentation review can verify intentions; only the implemented interface can v
 - [My Art Gallery | Portfolio, Awwwards](https://www.awwwards.com/sites/my-art-gallery-portfolio): the listing documents Kelly CLOVIS's Three.js/GSAP interactive portfolio and identifies it as a nominee dated May 15, 2026. It supports the feasibility of immersive presentation, not a claim of award-winning usability. Our plan deliberately avoids requiring a navigable 3D room.
 - [Awwwards Art & Illustration collection](https://www.awwwards.com/websites/art-illustration/): a discovery source for implementation-stage visual comparison, not a layout to copy wholesale.
 - [MDN: View Transition API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API): implementation reference for progressive image continuity.
-- [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion): implementation reference for the static choreography mode.
+- [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion): kept as background only. The motion contract deliberately does not gate on it, so it is not an implementation reference.
 - [MDN: prefers-color-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme): implementation reference for system-aware theme selection.
 
 Use references to evaluate coherence and restraint. Yujin's material determines the final image sequence, not whichever fashionable effect is easiest to import.

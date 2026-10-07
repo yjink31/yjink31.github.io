@@ -108,7 +108,6 @@ export default function MeAtmosphere() {
     let hasPointer = false
     let cursor: { x: number; y: number } | null = null
     let pausedForOverlay = false
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
     const scheme = window.matchMedia('(prefers-color-scheme: dark)')
     const colors = () => {
       const styles = getComputedStyle(document.documentElement)
@@ -132,8 +131,8 @@ export default function MeAtmosphere() {
     const draw = (now: number) => {
       frame = 0
       if (!canRender()) return
-      if (!reduced.matches && last && now - last < 1000 / ATMOSPHERE_FPS - 1) { frame = requestAnimationFrame(draw); return }
-      const delta = reduced.matches ? 0 : simulationDelta(last ? (now - last) / 1000 : 1 / ATMOSPHERE_FPS)
+      if (last && now - last < 1000 / ATMOSPHERE_FPS - 1) { frame = requestAnimationFrame(draw); return }
+      const delta = simulationDelta(last ? (now - last) / 1000 : 1 / ATMOSPHERE_FPS)
       last = now
       time += delta
       if (needsClear) clear()
@@ -142,7 +141,7 @@ export default function MeAtmosphere() {
       previous.copy(pointer)
       active *= Math.exp(-delta * 1.3)
       hover += ((hasPointer ? 1 : 0) - hover) * (1 - Math.exp(-delta * 8))
-      flow.uniforms.uActive.value = reduced.matches ? 0 : active
+      flow.uniforms.uActive.value = active
       flow.uniforms.uDelta.value = delta
       flow.uniforms.uPrevious.value = read.texture
       quad.material = flow
@@ -155,12 +154,12 @@ export default function MeAtmosphere() {
       renderer.setRenderTarget(pattern)
       renderer.render(scene, camera)
       display.uniforms.uField.value = read.texture
-      display.uniforms.uHover.value = reduced.matches ? 0 : hover
+      display.uniforms.uHover.value = hover
       quad.material = display
       renderer.setRenderTarget(null)
       renderer.render(scene, camera)
       if (!shaderFailed) element.dataset.ready = 'true'
-      if (!reduced.matches && canRender()) frame = requestAnimationFrame(draw)
+      if (canRender()) frame = requestAnimationFrame(draw)
     }
     const start = () => { if (!frame && canRender()) frame = requestAnimationFrame(draw) }
     const sync = () => {
@@ -171,7 +170,7 @@ export default function MeAtmosphere() {
     const updatePointer = (scrolling = false) => {
       if (!cursor) return
       const next = pointerInAtmosphere(cursor.x, cursor.y, bounds, window.scrollY)
-      if (!next.inside || reduced.matches) { hasPointer = false; active = 0; return }
+      if (!next.inside) { hasPointer = false; active = 0; return }
       if (!hasPointer || scrolling) previous.set(next.x, next.y)
       pointer.set(next.x, next.y)
       hasPointer = true
@@ -198,7 +197,7 @@ export default function MeAtmosphere() {
       start()
     }
     const move = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse' || reduced.matches || !canRender()) return
+      if (event.pointerType !== 'mouse' || !canRender()) return
       cursor = { x: event.clientX, y: event.clientY }
       updatePointer()
     }
@@ -207,7 +206,6 @@ export default function MeAtmosphere() {
     const lost = (event: Event) => { event.preventDefault(); contextLost = true; element.dataset.ready = 'false'; stop() }
     const restored = () => { contextLost = false; needsClear = true; sync() }
     const theme = () => { colors(); start() }
-    const preferences = () => { stop(); needsClear = true; hover = 0; leave(); start() }
     renderer.debug.onShaderError = () => { shaderFailed = true; element.dataset.ready = 'false'; stop() }
     colors()
     resizeRenderer()
@@ -230,7 +228,6 @@ export default function MeAtmosphere() {
     document.addEventListener('visibilitychange', sync)
     canvas.addEventListener('webglcontextlost', lost)
     canvas.addEventListener('webglcontextrestored', restored)
-    reduced.addEventListener('change', preferences)
     scheme.addEventListener('change', theme)
     sync()
 
@@ -245,7 +242,6 @@ export default function MeAtmosphere() {
       document.removeEventListener('visibilitychange', sync)
       canvas.removeEventListener('webglcontextlost', lost)
       canvas.removeEventListener('webglcontextrestored', restored)
-      reduced.removeEventListener('change', preferences)
       scheme.removeEventListener('change', theme)
       geometry.dispose(); flow.dispose(); patternPass.dispose(); display.dispose(); read.dispose(); write.dispose(); pattern.dispose()
       renderer.dispose(); renderer.forceContextLoss()

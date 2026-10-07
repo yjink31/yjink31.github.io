@@ -48,7 +48,6 @@ export function VideoPlayer({
   useEffect(() => {
     const element = video.current
     if (!element) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
     let inView = false
     let disposed = false
@@ -58,7 +57,7 @@ export function VideoPlayer({
       })
     }
     const maybePlay = () => {
-      if (shouldAutoplay({ autoplay, inView, hidden: document.hidden, reducedMotion: reduced.matches,
+      if (shouldAutoplay({ autoplay, inView, hidden: document.hidden,
         saveData: Boolean(connection?.saveData), manualPause: manualPause.current, muted: element.muted, failed })) {
         element.play().catch(() => { if (!disposed) setPlaying(false) })
       }
@@ -69,10 +68,8 @@ export function VideoPlayer({
       else element.pause()
     }, { threshold: [0, 0.3] })
     const visibility = () => { if (document.hidden) element.pause(); else maybePlay() }
-    const motion = () => { if (reduced.matches) element.pause(); else maybePlay() }
     element.addEventListener('play', pauseOthers)
     document.addEventListener('visibilitychange', visibility)
-    reduced.addEventListener('change', motion)
     observer.observe(element)
     return () => {
       disposed = true
@@ -80,7 +77,6 @@ export function VideoPlayer({
       element.pause()
       element.removeEventListener('play', pauseOthers)
       document.removeEventListener('visibilitychange', visibility)
-      reduced.removeEventListener('change', motion)
     }
   }, [autoplay, failed, src])
 

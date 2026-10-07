@@ -218,7 +218,7 @@ Back to Art, and the theme control, because the design contract fixes one name p
 - [tests/work-transition.test.ts](tests/work-transition.test.ts): selected-work isolation and transform-only handoffs.
 - [tests/routes.test.ts](tests/routes.test.ts): route resolution and browser-native link behavior.
 - [tests/router.test.ts](tests/router.test.ts): actual history routing with mocked browser APIs,
-  focus/scroll restoration, reduced motion, interruption, and transition cleanup.
+  focus/scroll restoration, interruption, and transition cleanup.
 - [tests/media-policy.test.ts](tests/media-policy.test.ts): autoplay, visibility, and playback error policies.
 - [tests/content.test.ts](tests/content.test.ts): local assets, responsive sources, and the placeholder link defaults.
 - [tests/theme.test.ts](tests/theme.test.ts): the colour format, its validation, and the
@@ -256,8 +256,26 @@ Cursor movement uses Motion values, not React state on every pointer frame.
 The native cursor returns for touch, keyboard navigation, editable controls,
 and modal dialogs. Labels and normal controls still work without the cursor.
 Lenis keeps native touch scrolling, pauses for dialogs, and resets immediately
-on navigation instead of continuing old momentum. Existing reduced-motion
-fallbacks are retained. No browser visual review was performed for this pass.
+on navigation instead of continuing old momentum. No browser visual review was performed for
+this pass.
+
+## Motion policy
+
+Motion is unconditional. Every entrance, hover transform, ambient drift, scroll hairline,
+view transition, cursor effect, and video autoplay runs for every visitor: there is no
+`prefers-reduced-motion` query in [src/index.css](src/index.css) and no component reads the
+preference, including autoplay. The choreography is part of the design, so a machine whose
+operating system has animation effects switched off still gets it. This is a deliberate
+product decision by the site owner, recorded in
+[notes/design_plan.md](notes/design_plan.md) and enforced by a source-level test in
+[tests/surface.test.ts](tests/surface.test.ts).
+
+Motion still degrades on capability rather than preference: entrances need an
+IntersectionObserver, the scroll hairline needs `animation-timeline: scroll()`, route
+transitions need the View Transition API, and the atmosphere needs WebGL. Safety is
+unchanged too — the cursor still hides for touch, keyboard navigation, editable controls,
+and dialogs, and autoplay still waits for visibility, a muted element, and a data-saving
+connection. None of those is a motion setting.
 
 ## Surface & flow
 
@@ -283,7 +301,7 @@ claiming a destination's identity.
 
 A 2px hairline at the top fills with scroll progress using CSS scroll-driven
 animations (`animation-timeline: scroll()`): no JavaScript, and it rests at zero
-wherever the feature or reduced motion is absent. The native document scrollbar is
+wherever the browser cannot drive it. The native document scrollbar is
 hidden (`scrollbar-width: none` plus a `::-webkit-scrollbar` rule) so the hairline is
 the only progress affordance. That hiding is nested in `@supports (animation-timeline:
 scroll())`, so a browser that cannot drive the hairline keeps its scrollbar rather than
@@ -353,8 +371,8 @@ itself runs at the viewport's own size, capped at `ATMOSPHERE_LENS_MAX_EDGE` (19
 the dither lands on the pixel grid; the pattern texture is upscaled into it. Tune the
 softness by that one value. Colors come from theme tokens; images and
 text remain unaffected. Rendering pauses once faded out, while the tab is hidden,
-a dialog is open, or a page transition is active. Reduced motion renders a static
-field with no cursor warping. Failed WebGL contexts leave an anchored, fading CSS
+a dialog is open, or a page transition is active. The field's animation does not depend on
+any visitor preference; only those conditions pause it. Failed WebGL contexts leave an anchored, fading CSS
 fallback. All targets, materials, geometry, observers, subscriptions, listeners,
 and the renderer are cleaned up on unmount.
 

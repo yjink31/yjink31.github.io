@@ -2,13 +2,12 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { canUsePointerEffects, cursorHint, cursorPosition, pointerOffset } from '../src/lib/interaction-policy.ts'
 
-const eligible = { enabled: true, reducedMotion: false, finePointer: true, hover: true }
+const eligible = { enabled: true, finePointer: true, hover: true }
 
 test('pointer effects run for a mouse with precise hover input', () => {
   assert.equal(canUsePointerEffects(eligible), true)
   assert.equal(canUsePointerEffects({ ...eligible, pointerType: 'touch' }), false)
   assert.equal(canUsePointerEffects({ ...eligible, pointerType: 'pen' }), false)
-  assert.equal(canUsePointerEffects({ ...eligible, reducedMotion: true }), false)
   assert.equal(canUsePointerEffects({ ...eligible, finePointer: false }), false)
   assert.equal(canUsePointerEffects({ ...eligible, hover: false }), false)
 })

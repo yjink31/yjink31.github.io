@@ -6,7 +6,6 @@ const eligible = {
   autoplay: true,
   inView: true,
   hidden: false,
-  reducedMotion: false,
   saveData: false,
   manualPause: false,
   muted: true,
@@ -18,7 +17,7 @@ test('featured video autoplays only when all safety conditions hold', () => {
   for (const condition of ['autoplay', 'inView', 'muted']) {
     assert.equal(shouldAutoplay({ ...eligible, [condition]: false }), false, condition)
   }
-  for (const condition of ['hidden', 'reducedMotion', 'saveData', 'manualPause', 'failed']) {
+  for (const condition of ['hidden', 'saveData', 'manualPause', 'failed']) {
     assert.equal(shouldAutoplay({ ...eligible, [condition]: true }), false, condition)
   }
 })

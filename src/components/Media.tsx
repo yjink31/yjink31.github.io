@@ -26,7 +26,7 @@ export function Image({ className = '', alt, style, workSlug, linked = false, ..
     <div data-work-image={workSlug} className={`image-frame ${className} ${status}`} style={{ '--image-ratio': props.width && props.height ? `${props.width} / ${props.height}` : undefined, ...style } as CSSProperties}>
       {status !== 'error' ? (
         <img referrerPolicy="no-referrer" {...props} key={`${source}-${attempt}`} ref={image} alt={alt} decoding="async" onLoad={(event) => {
-          if (!workSlug && !document.documentElement.dataset.transition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) event.currentTarget.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 650, easing: 'ease-out' })
+          if (!workSlug && !document.documentElement.dataset.transition) event.currentTarget.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 650, easing: 'ease-out' })
           setResult({ source, status: 'loaded' })
           props.onLoad?.(event)
         }} onError={(event) => {

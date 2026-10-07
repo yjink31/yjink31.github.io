@@ -49,8 +49,13 @@ owns scrolling, so `window.scrollTo` can be fought by it — use wheel input ins
   rather than deleting them.
 - Document user-visible work in [README.md](README.md); the shader and surface sections
   describe intent, budgets, and knobs.
-- Motion: wrap animations and transitions in `@media (prefers-reduced-motion: no-preference)`;
-  the global reduce rule kills the rest. Never make reduced motion depend on JavaScript.
+- Motion is unconditional, by explicit product decision: never gate an animation, transition,
+  view transition, autoplay, or cursor effect on `prefers-reduced-motion`, and never add a
+  blanket rule that switches motion off. Nothing in JavaScript reads the preference either.
+  Motion still degrades on capability — no IntersectionObserver, no `animation-timeline:
+  scroll()`, no View Transition API, no WebGL, coarse pointer — but never on the visitor's
+  operating-system animation setting. [tests/surface.test.ts](tests/surface.test.ts) enforces
+  this.
 - Layer contract: atmosphere/ambient `-1`, content `0`, header `10`, contextual `20`,
   dialogs `30`, cursor `40`. Background treatments stay behind content with
   `pointer-events: none`.

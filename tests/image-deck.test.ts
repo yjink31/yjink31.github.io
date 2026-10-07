@@ -42,7 +42,7 @@ test('one reusable deck keeps the affordance on the cursor, not over the image',
   assert.match(deckSource, /const cycling = images\.length > 1/)
   assert.match(deckSource, /\(value \+ 1\) % images\.length/)
   assert.match(deckSource, /\{cycling &&/)
-  // Cycling is a state change, not an animation, so there is nothing to gate under reduced motion.
+  // Cycling is a state change, not an animation, so the deck owns no motion of its own.
   assert.doesNotMatch(deckSource, /transition|animation/)
   assert.doesNotMatch(deckSource, /deck-count/)
 })

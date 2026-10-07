@@ -42,7 +42,8 @@ function update(path: string, restore = false) {
   const id = ++sequence
   activeTransition?.skipTransition()
   cleanupTransition?.()
-  const animated = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && Boolean(document.startViewTransition)
+  // The transition runs for every visitor; only the browser's support decides it.
+  const animated = Boolean(document.startViewTransition)
   const slug = transitionWork(currentPath, path)
   const source = selectWork(slug)
   const before = source?.getBoundingClientRect()
