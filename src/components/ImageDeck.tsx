@@ -51,7 +51,9 @@ export function ImageDeck({ images, width, height, className, loading, fetchPrio
           ))}
         </div>
       )}
-      <Image src={current.image} alt={current.alt} width={width} height={height} loading={loading} fetchPriority={fetchPriority} />
+      {/* A picture that declares its own proportions frames itself, so a set of mixed
+          upright and wide photographs is shown whole instead of cropped to one ratio. */}
+      <Image src={current.image} alt={current.alt} width={current.width ?? width} height={current.height ?? height} loading={loading} fetchPriority={fetchPriority} />
       {cycling && (
         <>
           {/* The button fills the frame, so hovering anywhere over the picture shows the

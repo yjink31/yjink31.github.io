@@ -21,7 +21,8 @@
 #
 # WHAT IS NOT HERE
 #   The interface's own labels and markers: the action labels (Inspect work,
-#   Open paper, Play, Pause, Mute, Retry, Back to Art), the theme control,
+#   Previous work, Next work, Open paper, Play, Pause, Mute, Retry, Back to Art),
+#   the theme control,
 #   and the one-line credit markers that follow an artist's name. The design
 #   contract fixes one name for each action, so they stay in the code while these
 #   files hold the content those controls act on.
@@ -76,9 +77,6 @@ layout:
   # Music
   # ---------------------------------------------------------------------------
   music:
-    # Which side of the page the featured film takes.
-    # left | right
-    feature_side: left
     # The three practice words under the experience text.
     show_topics: true
   # ---------------------------------------------------------------------------

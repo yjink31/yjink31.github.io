@@ -36,6 +36,9 @@ If a visual capture is genuinely unavoidable, take at most one or two of them an
 Never retry in a loop, and never detach, hide, or restyle page elements to force a
 capture. Leave the preview tab and its dev server running when you finish.
 
+The dev server indexes `public/` once, at startup, so media added while it runs is not
+served until it restarts — restart it before concluding a new file is broken.
+
 If you do need the browser: start a dev server on a free port, find its listener pid
 (`netstat -ano | grep :<port>`), then register that url and pid as the preview. Lenis
 owns scrolling, so `window.scrollTo` can be fought by it — use wheel input instead.

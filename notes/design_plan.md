@@ -109,7 +109,7 @@ Proposed implementation paths are `/`, `/art`, `/music`, and `/research`, with `
 - At narrow widths, use a compact identity row followed by one line of four page links. This needs no hamburger and keeps the complete site visible.
 - The theme control can sit in the shared footer to avoid crowding the mobile navigation.
 - Each route has one H1, a skip-to-content link, a meaningful document title, and real link semantics. Back/forward navigation restores scroll and selected artwork where possible.
-- Link vocabulary is fixed: **Resume**, **Inspect work**, **Open paper**, **Play sound**, **Mute**, **Pause**, **Play**, **Retry**, **Back to Art**. Do not introduce several marketing labels for the same action.
+- Link vocabulary is fixed: **Resume**, **Inspect work**, **Previous work**, **Next work**, **Open paper**, **Play sound**, **Mute**, **Pause**, **Play**, **Retry**, **Back to Art**. Do not introduce several marketing labels for the same action.
 - Contact information appears only if supplied. No invented email, availability claim, or contact form.
 
 ## Page choreography
@@ -174,32 +174,37 @@ Clicking an artwork carries the same image from its collection position into a l
 - Facts sit in a compact, readable block. The full description can be longer than a landing-page paragraph because understanding the work is this view's purpose.
 - Offer an explicit **Inspect work** action for the high-resolution image. Use a focus-managed dialog only if needed, with zoom buttons, keyboard pan, Escape to close, and an obvious close control. Never make drag or pinch the only way to inspect.
 - **Back to Art** returns to the originating artwork and restores focus. Browser Back should do the same.
+- **Previous work** and **Next work** walk the collection order from this view and wrap at both ends, so the chrome-free page never dead-ends. They share the bar **Back to Art** already owns and are never drawn over the work, which stays the inspect target. A single-work collection shows neither.
 - The registration is instant wherever the View Transition API is absent. A browser that supports it animates for every visitor, whatever the operating system's animation setting says (see the motion contract).
 - **Mobile:** title and essential facts remain near the image; description and close-ups follow vertically. No pinned facts column or overflowed horizontal stage.
 
 ### Music: time and attention
 
-**Composition:** one real performance film next to experience text, followed by a variable-width sequence of photos and recordings. This page feels temporal because the media has duration, not because typography loops.
+**Composition:** the films are the page's own subject, so they lead it at the full width of the window, one after another, each playing in place on the page. The note on the player's experience follows, then the recording slots, and a deck of photographs closes the page. This page feels temporal because the media has duration, not because typography loops.
 
 ```text
 Music
-[ featured performance video ]       [ experience text ]
-[ playback and sound controls ]
+[ performance film, full width, playing in place ]
+[ second film, full width ]
 
-[ photograph ]
-                       [ Bach prelude recording ]
-[ viola recording ]                 [ performance photograph ]
-              [ concerto recording ]
+[ note on the player's experience ]
+
+[ companion ]                     [ first recording slot ]
+[ second recording slot ]            [ third recording slot ]
+
+[ photographs: one deck the reader presses through ]
 ```
 
 - Meet the required autoplay behavior with `muted`, `playsInline`, and `autoplay`; include a poster and usable Pause/Play control. Autoplay with sound is not promised because browsers prohibit it in many cases.
-- Start muted playback only when the featured video is meaningfully visible. Pause offscreen and when the tab is hidden. Never autoplay the lower-page videos.
+- Start muted playback only when the first film is meaningfully visible. Pause offscreen and when the tab is hidden. Never autoplay the films below it.
+- A film is listed before its file exists rather than after: an empty `src` keeps the still and says so honestly, and never shows a player with nothing behind it.
+- The photographs close the page as one deck the reader presses through, wrapping at the end like every other deck. Each picture declares its own proportions, so a mixed set of upright and wide photographs is shown whole rather than cropped to one shape.
 - **Play sound** is an explicit action. Unmuting or starting another recording pauses competing media. The site never has two audio sources playing together.
 - With a detectable data-saving preference, start from the poster with manual Play. If autoplay is blocked, that same state appears naturally.
 - Experience text uses real supplied facts. Do not assume instrument, conservatory, awards, repertoire authorship, or professional role from placeholder labels.
 - Include the supplied examples **Bach prelude**, **viola**, and **concerto** once real media and accurate titles are available. Treat these as content requests, not verified recordings.
 - Captions sit below media. Provide accessible playback names, duration when known, transcripts or captions where relevant, and performance context outside the image.
-- **Mobile:** featured video, controls, experience text, then one media item per row. No offscreen next slide as the only sign that more recordings exist.
+- **Mobile:** the films with their controls, then the note, then one media item per row, and the photographs close the page. No offscreen next slide as the only sign that more recordings exist.
 
 ### Research: evidence with visual weight
 

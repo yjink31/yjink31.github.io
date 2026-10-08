@@ -5,6 +5,11 @@ import { PdfViewer } from '@/components/PdfViewer'
 import { ImageDeck } from '@/components/ImageDeck'
 import { VideoPlayer } from '@/components/VideoPlayer'
 import { PageLink } from '@/components/PageLink'
+import { workNeighbours } from '@/lib/work-sequence'
+
+/** The step actions' own names, kept in code like every other control label. */
+export const WORK_STEP_PREVIOUS = 'Previous work'
+export const WORK_STEP_NEXT = 'Next work'
 
 /**
  * A work's image inside the link to its own page. Every collection surface shares the
@@ -82,10 +87,20 @@ function ResumePanel({ url }: { url: string }) {
 
 export function ArtworkPage({ work }: { work: Artwork }) {
   const [inspecting, setInspecting] = useState(false)
+  // The collection order is the reading order, so the steps walk the same order the grid
+  // does and wrap at both ends: one work either side, never a dead end.
+  const { previous, next } = workNeighbours(artworks, work.slug)
   return (
     <>
       <div className="detail-actions enter">
         <PageLink href="/" data-magnetic data-cursor="Back to Art" className="button button-quiet back-link"><span aria-hidden="true">←</span> Back to Art</PageLink>
+        {/* The view carries no header, so stepping between works is how a visitor keeps
+            browsing. The two controls are quiet buttons on the bar Back to Art already
+            owns, never a drawn arrow over the artwork itself. */}
+        {(previous || next) && <nav className="work-steps" aria-label="More works">
+          {previous && <PageLink href={`/art/${previous.slug}`} data-magnetic data-cursor={WORK_STEP_PREVIOUS} className="button button-quiet work-step work-step-previous" aria-label={`${WORK_STEP_PREVIOUS}: ${previous.title}`}><span aria-hidden="true">←</span> {WORK_STEP_PREVIOUS}</PageLink>}
+          {next && <PageLink href={`/art/${next.slug}`} data-magnetic data-cursor={WORK_STEP_NEXT} className="button button-quiet work-step work-step-next" aria-label={`${WORK_STEP_NEXT}: ${next.title}`}>{WORK_STEP_NEXT} <span aria-hidden="true">→</span></PageLink>}
+        </nav>}
       </div>
       <article className="artwork-detail" data-copy={layout.detail.copySide}>
         <div className="detail-image">
@@ -111,14 +126,33 @@ export function ArtworkPage({ work }: { work: Artwork }) {
 
 export function MusicPage() {
   const music = pages.music
-  const video = music.feature.video
   const [openRecording, setOpenRecording] = useState<string | null>(null)
   return (
     <>
       <div className="page-heading enter"><h1 id="page-title" tabIndex={-1}>{music.heading}</h1><p>{music.introduction}</p></div>
-      <section className="music-feature enter enter-delay" data-side={layout.music.featureSide} aria-label="Featured recording and experiences">
-        <VideoPlayer autoplay label="Featured demo video" src={video.src} poster={video.poster} caption={video.caption} demo={video.demo} />
-        <div className="music-experience"><h2>{music.feature.heading}</h2><p>{music.feature.copy}</p>{music.feature.note && <p className="preview-copy">{music.feature.note}</p>}{layout.music.showTopics && <div className="music-topics">{music.feature.topics.map((topic) => <span key={topic}>{topic}</span>)}</div>}</div>
+      {/* The films lead the page, one after another, each spanning the window rather than a
+          column: a performance is what this page is about. The first plays on its own, muted,
+          once it is in view; the films below it wait to be started. A film whose file is not
+          there yet keeps its still and says so, rather than showing a player with nothing to
+          play. */}
+      <section className="music-films enter" aria-label="Performances">
+        {music.films.map((film, index) => (
+          <div className="music-film" key={`${film.title}-${index}`}>
+            {film.src
+              ? <VideoPlayer autoplay={index === 0} label={film.title} src={film.src} poster={film.poster} caption={film.caption ?? ''} demo={film.demo} />
+              : <div className="film-empty" role="status">
+                <Image src={film.poster} alt={`Still for the ${film.title} film.`} width={1600} height={900} loading="lazy" />
+                <p>{messages.recordingMissingHeading}</p>
+                <p>{messages.recordingMissingCopy}</p>
+              </div>}
+          </div>
+        ))}
+      </section>
+      <section className="music-experience reveal" aria-label="Experience and practice">
+        <h2>{music.feature.heading}</h2>
+        <p>{music.feature.copy}</p>
+        {music.feature.note && <p className="preview-copy">{music.feature.note}</p>}
+        {layout.music.showTopics && <div className="music-topics">{music.feature.topics.map((topic) => <span key={topic}>{topic}</span>)}</div>}
       </section>
       <section className="recording-collection" aria-label="Repertoire and recordings">
         {music.companion && <figure className="collection-companion reveal"><Image src={music.companion.image} alt={music.companion.alt} width={900} height={1080} loading="lazy" /></figure>}
@@ -129,6 +163,10 @@ export function MusicPage() {
           <div id={`recording-${index}`} hidden={openRecording !== recording.title}>{openRecording === recording.title && (recording.src ? <VideoPlayer src={recording.src} poster={recording.image} label={recording.title} caption={recording.caption ?? ''} demo={false} /> : <div className="recording-empty" role="status"><p>{messages.recordingMissingHeading}</p><p>{messages.recordingMissingCopy}</p></div>)}</div>
         </article>)}
       </section>
+      {/* The photographs close the page: one deck the reader presses through. */}
+      {music.photos.length > 0 && <section className="music-photos reveal" aria-label="Performance photographs">
+        <ImageDeck images={music.photos} width={1600} height={1000} loading="lazy" />
+      </section>}
     </>
   )
 }

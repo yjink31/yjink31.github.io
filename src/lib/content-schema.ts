@@ -88,6 +88,11 @@ export function number(source: Mapping, key: string, where: string): number {
   return result
 }
 
+/** A number only when the editor wrote one: leaving the setting out requires nothing. */
+export function optionalNumber(source: Mapping, key: string, where: string): number | undefined {
+  return source[key] === undefined || source[key] === null ? undefined : number(source, key, where)
+}
+
 export function flag(source: Mapping, key: string, where: string): boolean {
   const value = source[key]
   if (typeof value === 'boolean') return value
@@ -124,15 +129,27 @@ export function items(value: unknown, where: string): Mapping[] {
   return value.map((item, index) => mapping(item, `${where}[${index}]`))
 }
 
-/** One picture: where its file lives and what it shows. */
-export type Picture = { image: string; alt: string }
+/**
+ * One picture: where its file lives, what it shows, and, optionally, its real
+ * proportions. A picture that declares `width`/`height` is shown whole in a deck,
+ * which is what a set of mixed upright and wide photographs needs; without them the
+ * surface's own ratio frames it.
+ */
+export type Picture = { image: string; alt: string; width?: number; height?: number }
 
 /** An `images:` list, each entry an `image:`/`alt:` pair the reader can cycle as a deck. */
 export function deck(value: unknown, where: string): Picture[] {
   return items(value, where).map((entry, index) => {
     const place = `${where}[${index}]`
-    only(entry, place, ['image', 'alt'])
-    return { image: text(entry, 'image', place), alt: text(entry, 'alt', place) }
+    only(entry, place, ['image', 'alt', 'width', 'height'])
+    const width = optionalNumber(entry, 'width', place)
+    const height = optionalNumber(entry, 'height', place)
+    // The pair is what keeps a picture uncropped, so half of it is a mistake rather
+    // than a smaller frame. Without either, the surface's own ratio frames the picture.
+    if ((width === undefined) !== (height === undefined)) {
+      fail(place, 'needs both width and height, or neither')
+    }
+    return { image: text(entry, 'image', place), alt: text(entry, 'alt', place), ...(width === undefined ? {} : { width, height }) }
   })
 }
 

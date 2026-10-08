@@ -19,5 +19,11 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: ['.local', 'yujin'],
+    // Media dropped into public/ is served from disk on every request, so watching it
+    // buys nothing for hot reload. It does cost a crash: OneDrive holds a lock on a file
+    // while it syncs, and a locked file inside public/ takes the whole dev server down
+    // with EBUSY from the file watcher. Public files are indexed at startup either way,
+    // so new media is only served after a restart.
+    watch: { ignored: ['**/public/**'] },
   },
 })

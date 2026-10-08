@@ -87,7 +87,7 @@ export type Paper = {
 export type NavigationItem = { label: string; href: string }
 
 export type Layout = {
-  music: { featureSide: LayoutSide; showTopics: boolean }
+  music: { showTopics: boolean }
   detail: { copySide: LayoutSide }
 }
 
@@ -107,19 +107,35 @@ export type ArtContent = {
   }
 }
 
+/**
+ * One film at the top of the Music page: the whole width of the window, played in
+ * place. `src` is optional so a film can be listed before its file exists: the still
+ * stands in and the page says so rather than offering a player with nothing to play.
+ */
+export type MusicFilm = {
+  title: string
+  src?: string
+  poster: string
+  caption?: string
+  demo: boolean
+}
+
 export type MusicContent = {
   heading: string
   introduction: string
+  /** The films, in order. The first plays on its own; the ones below wait to be started. */
+  films: MusicFilm[]
   feature: {
     heading: string
     copy: string
     /** Optional: leave it empty in the content file to hide the line. */
     note?: string
     topics: string[]
-    video: { src: string; poster: string; caption?: string; demo: boolean }
   }
   /** Optional: a still that fills the collection grid's open top-left corner. */
   companion?: { image: string; alt: string }
+  /** Optional: the photographs at the bottom of the page, shown as one deck. */
+  photos: Picture[]
 }
 
 export type ResearchContent = {
@@ -269,29 +285,37 @@ function artPage(page: Mapping): ArtContent {
 }
 
 function musicPage(page: Mapping): MusicContent {
-  only(page, 'the page', ['heading', 'introduction', 'feature', 'companion'])
+  only(page, 'the page', ['heading', 'introduction', 'films', 'feature', 'companion', 'photos'])
   const feature = group(page, 'feature', '')
-  const video = group(feature, 'video', 'feature')
-  const companionBlock = page.companion === undefined ? undefined : group(page, 'companion', '')
+  only(feature, 'feature', ['heading', 'copy', 'note', 'topics'])
+  const companionBlock = page.companion === undefined || page.companion === null ? undefined : group(page, 'companion', '')
   if (companionBlock) only(companionBlock, 'companion', ['image', 'alt'])
   const companionImage = companionBlock ? optionalText(companionBlock, 'image', 'companion') : undefined
   const companion = companionBlock && companionImage ? { image: companionImage, alt: text(companionBlock, 'alt', 'companion') } : undefined
   return {
     heading: text(page, 'heading', ''),
     introduction: text(page, 'introduction', ''),
-    companion,
+    films: items(page.films, 'films').map((item, index) => {
+      const where = `films[${index}]`
+      only(item, where, ['title', 'src', 'poster', 'caption', 'demo'])
+      return {
+        title: text(item, 'title', where),
+        // Empty until the file exists: the still and the note stand in for the player.
+        src: optionalText(item, 'src', where),
+        poster: text(item, 'poster', where),
+        caption: optionalText(item, 'caption', where),
+        demo: flag(item, 'demo', where),
+      }
+    }),
     feature: {
       heading: text(feature, 'heading', 'feature'),
       copy: text(feature, 'copy', 'feature'),
       note: optionalText(feature, 'note', 'feature'),
       topics: lines(feature.topics, 'feature.topics'),
-      video: {
-        src: text(video, 'src', 'feature.video'),
-        poster: text(video, 'poster', 'feature.video'),
-        caption: optionalText(video, 'caption', 'feature.video'),
-        demo: flag(video, 'demo', 'feature.video'),
-      },
     },
+    companion,
+    // An emptied or missing block is simply no deck, like the companion still.
+    photos: page.photos === undefined || page.photos === null ? [] : deck(page.photos, 'photos'),
   }
 }
 
@@ -363,12 +387,11 @@ function spineFrom(root: Mapping): Spine {
   const layoutBlock = group(root, 'layout', '')
   only(layoutBlock, 'layout', ['music', 'detail'])
   const musicLayout = group(layoutBlock, 'music', 'layout')
-  only(musicLayout, 'layout.music', ['feature_side', 'show_topics'])
+  only(musicLayout, 'layout.music', ['show_topics'])
   const detailLayout = group(layoutBlock, 'detail', 'layout')
   only(detailLayout, 'layout.detail', ['copy_side'])
   const layout: Layout = {
     music: {
-      featureSide: choice(musicLayout, 'feature_side', 'layout.music', LAYOUT_SIDES),
       showTopics: flag(musicLayout, 'show_topics', 'layout.music'),
     },
     detail: { copySide: choice(detailLayout, 'copy_side', 'layout.detail', LAYOUT_SIDES) },

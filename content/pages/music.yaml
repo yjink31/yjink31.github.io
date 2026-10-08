@@ -1,27 +1,55 @@
 # =============================================================================
-# The Music page: the heading and the featured film.
+# The Music page: the films that lead it, the note under them, and the
+# photographs that close it.
 #
-# The recording slots under the film live in content/site.yaml.
+# The recording slots under the note live in content/media/recordings.yaml.
+# The photographs live in public/media/music, one entry each below.
+#
+# HOW TO EDIT
+#   * A "#" starts a note for you. The site ignores everything after it.
+#   * Keep the indentation exactly as it is. Each level is two spaces deeper.
+#   * Keep the wording before each ":" unchanged. Change only what follows it.
+#   * To empty a field, delete the text after the ":" and leave nothing there.
+#   * A list item begins with "- ". Keep the keys inside every item.
+#   * Save the file, then reload the page.
 # =============================================================================
 
-heading: Music
-introduction: Room for sound. Time to listen.
-feature:
-  heading: In practice.
-  copy: Rehearsal, repertoire, and performance belong here.
-  # An optional line about the recording. Leave it empty to hide it.
-  note:
-  # The featured film, next to the text above.
-  video:
-    # The recording file, or an https:// address.
-    src: https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4
-    # The still image shown before playback starts.
+heading: Music Portfolio
+introduction: Viola
+
+# -----------------------------------------------------------------------------
+# The films, in order, each one the full width of the window and played right
+# here on the page. The first starts on its own, muted, once it is in view; the
+# films below it wait for a press.
+#
+# Leave a src empty until that file exists: the still stands in and the page says
+# so honestly, instead of showing a player with nothing to play. Files live in
+# public/media/music and are written here as /media/music/<file>.
+# -----------------------------------------------------------------------------
+films:
+  - title: Bach prelude
+    src: /media/music/BachPrelude1.mp4
+    # The still shown before playback starts.
     poster: https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1600&q=85
     # An optional line under the player. Leave it empty to hide it.
     caption:
     # true while this is demo footage rather than a performance; it repeats.
-    demo: true
-  # The short practice words under the experience text.
+    demo: false
+  - title: Solo
+    src:
+    poster: https://images.unsplash.com/photo-1460036521480-ff49c08c2781?auto=format&fit=crop&w=1600&q=85
+    caption:
+    demo: false
+
+# -----------------------------------------------------------------------------
+# The note under the films.
+# -----------------------------------------------------------------------------
+feature:
+  heading: Orchestra
+  copy: Emory Youth Symphony Orchestra (EYSO) & GMEA All-State Orchestra
+  # An optional line under the copy. Leave it empty to hide it.
+  note:
+  # The short practice words under the note.
   topics:
     - Solo
     - Ensemble
@@ -35,3 +63,33 @@ feature:
 companion:
   image: https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=900&q=85
   alt: A grand piano in warm light, beside the first recording slot.
+
+# -----------------------------------------------------------------------------
+# The photographs that close the page: one deck the reader presses through, each
+# press showing the next one and wrapping at the end.
+#
+# Every entry needs its file, a description for a visitor who cannot see it, and
+# the picture's real proportions in pixels, so upright and wide photographs are
+# both shown whole rather than cropped to one shape.
+# -----------------------------------------------------------------------------
+photos:
+  - image: /media/music/265.JPG
+    alt: Photograph 1 from the music collection.
+    width: 2448
+    height: 3264
+  - image: /media/music/IMG_5505.JPG
+    alt: Photograph 2 from the music collection.
+    width: 2816
+    height: 2112
+  - image: /media/music/IMG_7376.JPG
+    alt: Photograph 3 from the music collection.
+    width: 4000
+    height: 1868
+  - image: /media/music/IMG_7498.JPG
+    alt: Photograph 4 from the music collection.
+    width: 2703
+    height: 2027
+  - image: /media/music/IMG_8833.JPG
+    alt: Photograph 5 from the music collection.
+    width: 2448
+    height: 2448

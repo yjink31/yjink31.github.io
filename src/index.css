@@ -302,6 +302,12 @@ button:active, .button:active { transform: translateY(1px); }
 .detail-actions .button { gap: 14px; }
 .button-quiet { background: transparent; color: var(--text); border: 1px solid var(--line); }
 .button-quiet:hover { border-color: var(--text); }
+/* The artwork view walks the collection without going back to it: one quiet button per
+   direction, pushed to the far end of the bar Back to Art already owns so the two jobs
+   read apart. Nothing is drawn over the work, which stays the inspect target. */
+.work-steps { display: flex; gap: 10px; margin-left: auto; }
+.detail-actions .work-step { gap: 10px; padding-inline: 16px; }
+.work-step > span[aria-hidden] { font-size: 18px; }
 .artwork-detail { display: grid; grid-template-columns: 8fr 4fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
 /* The view carries no header or footer, so the whole work is scaled to the room the viewport
    has left rather than to the column width: the frame takes the narrower of the two, which
@@ -323,7 +329,17 @@ button:active, .button:active { transform: translateY(1px); }
 .source-note a { margin-top: 10px; }
 .artwork-detail { margin-bottom: 96px; }
 
-.music-feature { display: grid; grid-template-columns: 8fr 4fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+/* The films lead the page edge to edge: full-bleed from inside the capped shell, so the
+   picture measures the window rather than the shell. The stage keeps the film's own 16:9,
+   which is what the video is, so nothing is cropped to a column's ratio. */
+.music-films { display: flex; flex-direction: column; gap: clamp(28px, 6vh, 72px); margin-top: 40px; }
+.music-film { width: 100vw; margin-inline: calc(50% - 50vw); }
+.music-film .video-stage { aspect-ratio: 16 / 9; }
+.music-film .media-note { padding-inline: var(--gutter); }
+/* A film whose file is not there yet: the still stands in at the same width and ratio. */
+.film-empty { background: var(--surface-raised); }
+.film-empty p { padding: 12px var(--gutter) 0; color: var(--secondary); font-size: 14px; }
+.film-empty p:last-of-type { padding-bottom: 16px; }
 .video-stage { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface-raised); }
 .video-stage video { width: 100%; height: 100%; object-fit: cover; }
 /* The frame is the play/pause control: a transparent button over the picture, so hovering
@@ -347,6 +363,9 @@ button:active, .button:active { transform: translateY(1px); }
 .video-progress::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 0; background: var(--text); }
 .video-progress:disabled { opacity: 0.55; cursor: default; }
 .media-note { color: var(--secondary); font-size: 12px; margin-top: 10px; }
+/* The note and the photographs keep a readable measure under the full-width films. */
+.music-experience { max-width: 760px; margin-top: clamp(48px, 9vh, 96px); }
+.music-photos { max-width: 900px; margin-block: clamp(64px, 12vh, 128px) 60px; }
 .music-experience h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -2.5px; margin-bottom: 24px; }
 .music-experience > p { font-size: 17px; max-width: 32ch; }
 .music-experience .preview-copy { margin-top: 20px; color: var(--secondary); font-size: 14px; }
@@ -466,6 +485,8 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
 .revealed .work-caption, .revealed .recording-caption { animation: enter 900ms 90ms var(--ease-out-expo) both; }
 .text-link > span[aria-hidden], .button > span[aria-hidden] { transition: transform 250ms var(--ease-out-expo); }
 .detail-actions .back-link:hover > span[aria-hidden] { transform: translateX(-3px); }
+.detail-actions .work-step-previous:hover > span[aria-hidden] { transform: translateX(-3px); }
+.detail-actions .work-step-next:hover > span[aria-hidden] { transform: translateX(3px); }
 
 @media (min-width: 768px) and (hover: hover) {
   .work-description { opacity: 0; transition: opacity 180ms; }
@@ -482,7 +503,6 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
   .portrait { grid-column: 1 / 7; }
   .resume-panel { grid-column: 9 / 13; }
   .art-collection { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-  .music-feature { grid-template-columns: 7fr 5fr; gap: 32px; }
   .artwork-detail { gap: 32px; }
   .research-project > .paper-widget { grid-column: 8 / 13; }
 }
@@ -508,11 +528,12 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
   .work-mobile-description { display: block; }
   .artwork-detail { grid-template-columns: 1fr; gap: 28px; }
   .detail-actions { margin-top: 20px; margin-bottom: 24px; }
+  .work-steps { gap: 8px; }
+  .detail-actions .work-step { padding-inline: 14px; }
   .detail-copy { padding: 0; }
   .detail-copy h1 { font-size: 36px; }
   .detail-copy dl { margin-block: 26px; }
   .artwork-detail { margin-bottom: 56px; }
-  .music-feature { grid-template-columns: 1fr; gap: 32px; }
   .video-stage { aspect-ratio: 4 / 3; }
   .music-experience h2 { font-size: 40px; margin-bottom: 18px; }
   .music-experience > p { max-width: 42ch; }
@@ -558,14 +579,6 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
   .artwork-detail[data-copy='left'] { grid-template-columns: 4fr 8fr; }
   .artwork-detail[data-copy='left'] .detail-image { grid-column: 2; grid-row: 1; }
   .artwork-detail[data-copy='left'] .detail-copy { grid-column: 1; grid-row: 1; }
-  .music-feature[data-side='right'] { grid-template-columns: 4fr 8fr; }
-  .music-feature[data-side='right'] .music-experience { grid-column: 1; grid-row: 1; }
-  .music-feature[data-side='right'] .video-player { grid-column: 2; grid-row: 1; }
-}
-
-/* Tablet keeps its narrower two-column proportions while mirrored. */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .music-feature[data-side='right'] { grid-template-columns: 5fr 7fr; }
 }
 
 /* The cursor is an input hint, not a replacement for semantic labels. */

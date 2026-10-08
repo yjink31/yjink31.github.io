@@ -26,6 +26,21 @@ test('a deck needs at least one image and reports a stray or missing field', () 
   assert.throws(() => deck([{ image: '/a.jpg' }], 'block.images'), /block\.images\[0\]\.alt: cannot be left empty/)
 })
 
+test('a picture that declares its own proportions frames itself', () => {
+  // One declared ratio cannot hold a set of upright and wide photographs without cropping
+  // some of them, so a picture may carry its own pair and the deck uses it for that picture.
+  assert.deepEqual(deck([{ image: '/a.jpg', alt: 'A', width: 900, height: 1200 }], 'images'),
+    [{ image: '/a.jpg', alt: 'A', width: 900, height: 1200 }])
+  // Without the pair the entry is exactly what it was, so every existing deck is unchanged.
+  assert.deepEqual(deck([{ image: '/a.jpg', alt: 'A' }], 'images'), [{ image: '/a.jpg', alt: 'A' }])
+  assert.throws(() => deck([{ image: '/a.jpg', alt: 'A', width: 900 }], 'images'),
+    /images\[0\]: needs both width and height, or neither/)
+  assert.throws(() => deck([{ image: '/a.jpg', alt: 'A', width: 'wide', height: 900 }], 'images'),
+    /images\[0\]\.width: needs a number above zero \(found "wide"\)/)
+  // The frame takes the picture's own pair, falling back to the surface's declared ratio.
+  assert.match(deckSource, /width=\{current\.width \?\? width\} height=\{current\.height \?\? height\}/)
+})
+
 test('the research page parses its decks, and a doubled block names the file', () => {
   assert.ok(site.pages.research.project.images.length >= 2, 'the project image should be a deck')
   assert.ok(site.pages.research.smaller.projects.every((project) => project.images.length >= 1))

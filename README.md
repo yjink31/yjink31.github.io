@@ -40,9 +40,9 @@ empty it.
 ```yaml
 layout:
   music:
-    # Which side of the page the featured film takes.
-    # left | right
-    feature_side: left
+    # Whether the practice words appear under the experience text.
+    # true | false
+    show_topics: true
 ```
 
 - `site.name`, `site.tagline`: the identity in the header, footer, and browser tab.
@@ -64,7 +64,9 @@ layout:
 - `messages`: sentences shown while something has not been supplied yet.
 
 Put approved files in `public/media` and refer to them as `/media/portrait.webp`. The
-portrait already lives there, so it survives a production build.
+portrait already lives there, so it survives a production build. The dev
+server indexes `public/` when it starts, so a file dropped in while it is running is
+answered with the page itself rather than the file: add the media, then restart the server.
 
 ### Image decks
 
@@ -90,7 +92,24 @@ file alone — the surrounding CSS decides the slot it fills. The control is a t
 button over the frame, so nothing is drawn over the image and the cursor hint and focus
 ring carry the affordance. Up to two of the next cards peek out behind the frame, edge
 only, so the deck reads as a stack there is more to leaf through. The Research page ships
-two demos: the project image and each smaller project.
+two demos: the project image and each smaller project, and the Music page uses one for
+its photographs.
+
+### The Music page
+
+The page leads with its films: `films:` in [content/pages/music.yaml](content/pages/music.yaml)
+is a list, and each entry runs the full width of the window, one after another, played in
+place by the same [VideoPlayer](src/components/VideoPlayer.tsx) the recording slots use.
+The site never hands a video file to the browser to open or download. The first film starts
+on its own, muted, once it is in view; the films below it wait for a press. A film whose
+`src` is still empty keeps its `poster` and says so, instead of showing a player with
+nothing behind it, so a film can be listed before its file exists — put the file in
+`public/media/music` and write `/media/music/<file>` as its `src`. The note under the films
+(`feature:`) and the recording slots below it are unchanged, and the photographs that close
+the page are one deck: `photos:` takes the same `image`/`alt` entries as any other deck,
+plus each picture's real `width`/`height`, so a mixed set of upright and wide photographs is
+shown whole rather than cropped to one shape. Leave the block out, or empty it, and the page
+simply ends after the recordings.
 
 ### The resume
 
@@ -146,7 +165,6 @@ so no choice needs new CSS.
 
 | Setting | Values | Effect |
 | --- | --- | --- |
-| `layout.music.feature_side` | `left`, `right` | Which side the featured film takes |
 | `layout.music.show_topics` | `true`, `false` | The practice words under the experience text |
 | `layout.detail.copy_side` | `left`, `right` | Which side an artwork page's facts take |
 | `artworks[].size` | `large`, `small`, `offset`, `wide` | Room a work takes in the collection |
@@ -162,7 +180,12 @@ page carries the hero: the opening statement and portrait that used to be the Me
 The hero's atmosphere canvas is anchored to that section. The Art page no longer carries
 a separate featured work and close-up pane, and the quick links to Music and Research that
 used to sit under the hero are gone; both live in the header navigation. Each work's own
-page carries the featured work and its close-up, which the grid opens.
+page carries the featured work and its close-up, which the grid opens. That page also walks
+the collection: **Previous work** and **Next work** sit on the same bar as **Back to Art**,
+in collection order, and wrap at both ends, so the chrome-free view never dead-ends. They are
+real links, so a step can be opened in a new tab, and the browser's Back still works. The
+neighbourhood comes from [work-sequence.ts](src/lib/work-sequence.ts), reading the same list
+the grid renders, so the two can never disagree.
 
 Mirrored and reordered compositions are desktop-only: below 768px every section is one
 column in semantic reading order, as [the design plan](notes/design_plan.md) requires.
@@ -178,7 +201,7 @@ The files are validated as they load. A missing field, a value outside its allow
 misspelled setting, a repeated slug, a colour that is not a colour, a featured work or
 paper that does not exist, and a GHP pair that is not exactly two images each fail with the
 exact file and setting, for example
-`content/site.yaml → layout.music.feature_side: must be one of: left, right (found "centre")`
+`content/site.yaml → layout.detail.copy_side: must be one of: left, right (found "centre")`
 and
 `content/pages/research.yaml → project.paper: points at a paper named "poject", which content/media/papers.yaml does not define under papers`.
 A mistake in one file never reports another file's name.
@@ -188,8 +211,9 @@ through [site-content.ts](src/lib/site-content.ts) and
 [theme-content.ts](src/lib/theme-content.ts), which share the validation vocabulary in
 [content-schema.ts](src/lib/content-schema.ts); [content.ts](src/content.ts) is the typed
 result the pages read. Content that describes the prototype itself stays in code:
-the action labels Inspect work, Open paper, Open resume, Play, Pause, Mute, Retry, and
-Back to Art, and the theme control, because the design contract fixes one name per action.
+the action labels Inspect work, Previous work, Next work, Open paper, Open resume, Play,
+Pause, Mute, Retry, and Back to Art, and the theme control, because the design contract
+fixes one name per action.
 
 ## Architecture
 
@@ -199,6 +223,7 @@ Back to Art, and the theme control, because the design contract fixes one name p
 - [content/](content): the spine, the collection, one file per page, and every colour.
 - [src/pages.tsx](src/pages.tsx): page compositions and artwork details.
 - [src/lib/routes.ts](src/lib/routes.ts): path resolution, the front-page Art identity, and active-link mapping.
+- [src/lib/work-sequence.ts](src/lib/work-sequence.ts): the works either side of one in the collection, wrapping at both ends.
 - [src/content.ts](src/content.ts): the parsed, typed content the pages read.
 - [src/lib/content-schema.ts](src/lib/content-schema.ts): the validation vocabulary the content files share.
 - [src/lib/site-content.ts](src/lib/site-content.ts): the spine, page, and collection formats, plus image helpers.

@@ -66,16 +66,18 @@ test('every content file explains itself to a non-technical editor', () => {
 })
 
 test('every curated layout choice is documented next to its allowed values and wired to the page', () => {
-  for (const setting of ['feature_side:', 'show_topics:', 'copy_side:']) {
+  for (const setting of ['show_topics:', 'copy_side:']) {
     assert.ok(siteSources.site.includes(setting), `${setting} should be documented in site.yaml`)
   }
   assert.ok(siteSources.media.artworks.includes('large | small | offset | wide'))
-  assert.equal(siteSources.site.match(/left \| right/g)?.length, 2)
+  assert.equal(siteSources.site.match(/left \| right/g)?.length, 1)
   // Each option reaches a real composition, and the mirrored one has CSS behind it.
-  assert.match(pagesSource, /data-side=\{layout\.music\.featureSide\}/)
   assert.match(pagesSource, /data-copy=\{layout\.detail\.copySide\}/)
   assert.match(css, /\.artwork-detail\[data-copy='left'\] \{ grid-template-columns/)
-  assert.match(css, /\.music-feature\[data-side='right'\] \{ grid-template-columns/)
+  // The Music page's films run the full width in file order, so there is no side left
+  // for a "featured film side" choice and the option is gone with its CSS.
+  assert.doesNotMatch(siteSources.site, /feature_side/)
+  assert.doesNotMatch(css, /\.music-feature/)
 })
 
 test('the front page is one bento grid of the whole collection, four works per row', () => {
@@ -142,9 +144,9 @@ test('a look outside the documented set fails with the file, the setting, and th
 })
 
 test('a choice outside the documented set fails with the file, the setting, and the allowed values', () => {
-  const broken = withFile('site', editLine(siteSources.site, /feature_side: \w+/, 'feature_side: centre'))
+  const broken = withFile('site', editLine(siteSources.site, /copy_side: \w+/, 'copy_side: centre'))
   assert.throws(() => parseSite(broken),
-    /content\/site\.yaml → layout\.music\.feature_side: must be one of: left, right \(found "centre"\)/)
+    /content\/site\.yaml → layout\.detail\.copy_side: must be one of: left, right \(found "centre"\)/)
 })
 
 test('a misspelled setting is reported instead of being silently ignored', () => {
@@ -183,7 +185,9 @@ test('the music companion still fills the collection\'s open corner', () => {
 })
 
 test('a paper panel must point at something another file defines', () => {
-  const wrongPaper = withFile('research', editLine(siteSources.pages.research, /^\s+paper: \S+/m, '  paper: poject'))
+  // `[ \t]+` rather than `\s+`: with the `m` flag a JavaScript `^` also matches after a
+  // `\r`, so `\s+` would swallow the line break itself and quietly edit the line above.
+  const wrongPaper = withFile('research', editLine(siteSources.pages.research, /^[ \t]+paper: \S+/m, '  paper: poject'))
   assert.throws(() => parseSite(wrongPaper),
     /content\/pages\/research\.yaml → project\.paper: points at a paper named "poject"/)
   // Two works sharing a slug, whatever the works are called today.
