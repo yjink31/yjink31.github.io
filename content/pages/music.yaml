@@ -1,9 +1,6 @@
 # =============================================================================
-# The Music page: the films that lead it, the note under them, and the
-# photographs that close it.
-#
-# The recording slots under the note live in content/media/recordings.yaml.
-# The photographs live in public/media/music, one entry each below.
+# The Music page: the orchestra film with its side text at the top, the films
+# under it, and the photographs that close it.
 #
 # HOW TO EDIT
 #   * A "#" starts a note for you. The site ignores everything after it.
@@ -18,37 +15,28 @@ heading: Music Portfolio
 introduction: Viola
 
 # -----------------------------------------------------------------------------
-# The films, in order, each one the full width of the window and played right
-# here on the page. The first starts on its own, muted, once it is in view; the
-# films below it wait for a press.
+# The orchestra film and the text beside it: the film takes the wide column and
+# the heading and copy sit alongside it as the side text. Which side the film
+# takes is chosen in content/site.yaml (feature_side).
 #
 # Leave a src empty until that file exists: the still stands in and the page says
 # so honestly, instead of showing a player with nothing to play. Files live in
 # public/media/music and are written here as /media/music/<file>.
-# -----------------------------------------------------------------------------
-films:
-  - title: Bach prelude
-    src: /media/music/BachPrelude1.mp4
-    # The still shown before playback starts.
-    poster: https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1600&q=85
-    # An optional line under the player. Leave it empty to hide it.
-    caption:
-    # true while this is demo footage rather than a performance; it repeats.
-    demo: false
-  - title: Solo
-    src:
-    poster: https://images.unsplash.com/photo-1460036521480-ff49c08c2781?auto=format&fit=crop&w=1600&q=85
-    caption:
-    demo: false
-
-# -----------------------------------------------------------------------------
-# The note under the films.
 # -----------------------------------------------------------------------------
 feature:
   heading: Orchestra
   copy: Emory Youth Symphony Orchestra (EYSO) & GMEA All-State Orchestra
   # An optional line under the copy. Leave it empty to hide it.
   note:
+  # The film beside the text above. It starts on its own, muted, once it is in view.
+  video:
+    src: /media/music/Orchestra1.mp4
+    # The still shown before playback starts.
+    poster: https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=1600&q=85
+    # An optional line under the player. Leave it empty to hide it.
+    caption:
+    # true while this is demo footage rather than a performance; it repeats.
+    demo: false
   # The short practice words under the note.
   topics:
     - Solo
@@ -56,17 +44,29 @@ feature:
     - Performance
 
 # -----------------------------------------------------------------------------
-# The collection's companion still. The recording slots are offset, which leaves
-# the top left of the grid open beside the first slot; this image fills it.
-# Leave image empty to drop the still and let the offset stand alone.
+# The films under the orchestra film, in order, each one the full width of the
+# window and played right here on the page. They wait for a press, and each
+# film's caption is the text shown below its player.
 # -----------------------------------------------------------------------------
-companion:
-  image: https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=900&q=85
-  alt: A grand piano in warm light, beside the first recording slot.
+films:
+  - title: Bach prelude
+    src: /media/music/BachPrelude1.mp4
+    # The still shown before playback starts.
+    poster: https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1600&q=85
+    # The text below the player. Leave it empty to hide it.
+    caption: J.S. Bach, Prelude.
+    # true while this is demo footage rather than a performance; it repeats.
+    demo: false
+  - title: Solo repertoire
+    src:
+    poster: https://images.unsplash.com/photo-1460036521480-ff49c08c2781?auto=format&fit=crop&w=1600&q=85
+    caption:
+    demo: false
 
 # -----------------------------------------------------------------------------
-# The photographs that close the page: one deck the reader presses through, each
-# press showing the next one and wrapping at the end.
+# The photographs that close the page: one strip the reader turns with the left
+# and right arrows. Every picture sits on one circle, and each press rotates the
+# circle one place, wrapping at both ends.
 #
 # Every entry needs its file, a description for a visitor who cannot see it, and
 # the picture's real proportions in pixels, so upright and wide photographs are
@@ -93,3 +93,7 @@ photos:
     alt: Photograph 5 from the music collection.
     width: 2448
     height: 2448
+  - image: /media/music/20150303_152956.jpg
+    alt: Photograph 6 from the music collection.
+    width: 4128
+    height: 2322

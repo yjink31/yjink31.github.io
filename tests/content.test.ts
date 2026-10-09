@@ -47,9 +47,12 @@ test('resume and paper links point at placeholders while recordings stay honestl
   assert.equal(pages.art.hero.resumeUrl, '/media/resume.pdf')
   assert.equal(papers.project.url, '/media/project-paper.pdf')
   assert.equal(papers.ghp.url, '/media/ghp-paper.pdf')
-  // The page's films are real performances, so none of them repeats as a demo would.
-  assert.deepEqual(pages.music.films.map((film) => film.title), ['Bach prelude', 'Solo'])
+  // The orchestra film and the films below are real performances, so none of them
+  // repeats as a demo would.
+  assert.deepEqual(pages.music.films.map((film) => film.title), ['Bach prelude', 'Solo repertoire'])
   assert.ok(pages.music.films.every((film) => film.demo === false))
+  assert.equal(pages.music.feature.video.src, '/media/music/Orchestra1.mp4')
+  assert.equal(pages.music.feature.video.demo, false)
   // A listed film with no file yet keeps its still and says so honestly.
   assert.equal(pages.music.films[0].src, '/media/music/BachPrelude1.mp4')
   assert.deepEqual(pages.music.films.slice(1).map((film) => film.src), [undefined])

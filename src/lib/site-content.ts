@@ -87,7 +87,7 @@ export type Paper = {
 export type NavigationItem = { label: string; href: string }
 
 export type Layout = {
-  music: { showTopics: boolean }
+  music: { featureSide: LayoutSide; showTopics: boolean }
   detail: { copySide: LayoutSide }
 }
 
@@ -108,9 +108,9 @@ export type ArtContent = {
 }
 
 /**
- * One film at the top of the Music page: the whole width of the window, played in
- * place. `src` is optional so a film can be listed before its file exists: the still
- * stands in and the page says so rather than offering a player with nothing to play.
+ * One film on the Music page: played in place. `src` is optional so a film can be
+ * listed before its file exists: the still stands in and the page says so rather
+ * than offering a player with nothing to play.
  */
 export type MusicFilm = {
   title: string
@@ -123,18 +123,21 @@ export type MusicFilm = {
 export type MusicContent = {
   heading: string
   introduction: string
-  /** The films, in order. The first plays on its own; the ones below wait to be started. */
-  films: MusicFilm[]
+  /**
+   * The orchestra film beside its side text. It starts on its own, muted, once it
+   * is in view; the films below wait to be started.
+   */
   feature: {
     heading: string
     copy: string
     /** Optional: leave it empty in the content file to hide the line. */
     note?: string
+    video: { src?: string; poster: string; caption?: string; demo: boolean }
     topics: string[]
   }
-  /** Optional: a still that fills the collection grid's open top-left corner. */
-  companion?: { image: string; alt: string }
-  /** Optional: the photographs at the bottom of the page, shown as one deck. */
+  /** The films under the feature, in order, each one the full width of the window. */
+  films: MusicFilm[]
+  /** Optional: the photographs at the bottom of the page, shown as a turning strip. */
   photos: Picture[]
 }
 
@@ -285,16 +288,27 @@ function artPage(page: Mapping): ArtContent {
 }
 
 function musicPage(page: Mapping): MusicContent {
-  only(page, 'the page', ['heading', 'introduction', 'films', 'feature', 'companion', 'photos'])
+  only(page, 'the page', ['heading', 'introduction', 'feature', 'films', 'photos'])
   const feature = group(page, 'feature', '')
-  only(feature, 'feature', ['heading', 'copy', 'note', 'topics'])
-  const companionBlock = page.companion === undefined || page.companion === null ? undefined : group(page, 'companion', '')
-  if (companionBlock) only(companionBlock, 'companion', ['image', 'alt'])
-  const companionImage = companionBlock ? optionalText(companionBlock, 'image', 'companion') : undefined
-  const companion = companionBlock && companionImage ? { image: companionImage, alt: text(companionBlock, 'alt', 'companion') } : undefined
+  only(feature, 'feature', ['heading', 'copy', 'note', 'video', 'topics'])
+  const video = group(feature, 'video', 'feature')
+  only(video, 'feature.video', ['src', 'poster', 'caption', 'demo'])
   return {
     heading: text(page, 'heading', ''),
     introduction: text(page, 'introduction', ''),
+    feature: {
+      heading: text(feature, 'heading', 'feature'),
+      copy: text(feature, 'copy', 'feature'),
+      note: optionalText(feature, 'note', 'feature'),
+      video: {
+        // Empty until the file exists: the still and the note stand in for the player.
+        src: optionalText(video, 'src', 'feature.video'),
+        poster: text(video, 'poster', 'feature.video'),
+        caption: optionalText(video, 'caption', 'feature.video'),
+        demo: flag(video, 'demo', 'feature.video'),
+      },
+      topics: lines(feature.topics, 'feature.topics'),
+    },
     films: items(page.films, 'films').map((item, index) => {
       const where = `films[${index}]`
       only(item, where, ['title', 'src', 'poster', 'caption', 'demo'])
@@ -307,14 +321,7 @@ function musicPage(page: Mapping): MusicContent {
         demo: flag(item, 'demo', where),
       }
     }),
-    feature: {
-      heading: text(feature, 'heading', 'feature'),
-      copy: text(feature, 'copy', 'feature'),
-      note: optionalText(feature, 'note', 'feature'),
-      topics: lines(feature.topics, 'feature.topics'),
-    },
-    companion,
-    // An emptied or missing block is simply no deck, like the companion still.
+    // An emptied or missing block is simply no strip.
     photos: page.photos === undefined || page.photos === null ? [] : deck(page.photos, 'photos'),
   }
 }
@@ -387,11 +394,12 @@ function spineFrom(root: Mapping): Spine {
   const layoutBlock = group(root, 'layout', '')
   only(layoutBlock, 'layout', ['music', 'detail'])
   const musicLayout = group(layoutBlock, 'music', 'layout')
-  only(musicLayout, 'layout.music', ['show_topics'])
+  only(musicLayout, 'layout.music', ['feature_side', 'show_topics'])
   const detailLayout = group(layoutBlock, 'detail', 'layout')
   only(detailLayout, 'layout.detail', ['copy_side'])
   const layout: Layout = {
     music: {
+      featureSide: choice(musicLayout, 'feature_side', 'layout.music', LAYOUT_SIDES),
       showTopics: flag(musicLayout, 'show_topics', 'layout.music'),
     },
     detail: { copySide: choice(detailLayout, 'copy_side', 'layout.detail', LAYOUT_SIDES) },

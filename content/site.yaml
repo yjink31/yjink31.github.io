@@ -77,6 +77,9 @@ layout:
   # Music
   # ---------------------------------------------------------------------------
   music:
+    # Which side of the Music page the orchestra film takes, with its text beside it.
+    # left | right
+    feature_side: left
     # The three practice words under the experience text.
     show_topics: true
   # ---------------------------------------------------------------------------

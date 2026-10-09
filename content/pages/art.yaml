@@ -25,9 +25,9 @@ hero:
     image: /media/portrait.jpg
     alt: Reference portrait photograph, not Yujin Kim.
     # The greeting, which is the page's own heading.
-    lead: Hello, I'm Yujin!
+    lead: Art Portfolio
     # The caption below the greeting.
-    caption: Always overthinking a detail nobody else will notice. Powered by good coffee and bad jokes. Here's what I'm currently building.
+    caption: Hello, I'm Yujin!
     # The real proportions of the image file, in pixels.
     width: 1280
     height: 1280

@@ -19,26 +19,20 @@
 # =============================================================================
 
 artworks:
-  - slug: work-01
-    title: Gaze
-    artist: 18”x24”
-    year: 2026
-    material: Charcoal on Paper
-    description: This study explores proportional accuracy with a compressed, guarded figure. The slightly offset positioning of the subject and shriveled pose, suggests hesitation while high contrast of the anatomical contours capture the values of the clothing wrinkles. 
-
-    # true = a museum work, so its source link is kept on the artwork page.
+  - slug: work-08
+    title: Should I Drop Out?
+    artist: 15”x13”x9”
+    year: 2025
+    material: Mixed Media (Paper Clay, Cardboard, Wood)
+    description: Inspired by personal experiences of feeling overwhelmed in class, this piece captures the weight of academic pressure. Clay’s malleable, slumping forms show vulnerability, while the megaphone visualizes one-way communication of the teacher shifting yellow-to-red with frustration.
     reference: false
-    # A file in public/media. For a museum work, use image_id and source instead.
-    image: /media/placeholders/Gaze.jpg
-    alt: Placeholder drawing numbered 01, a tall panel.
-    # The real proportions of the image file, in pixels.
-    width: 1200
-    height: 1500
-    # The part of the work the close-up shows: horizontal% vertical%.
+    image: /media/placeholders/Should I Drop Out.jpg
+    alt: Placeholder drawing numbered 08, a landscape panel.
+    width: 2476
+    height: 1648
     crop: '50% 50%'
-    # How much space the work takes in the collection.
-    # large | small | offset | wide
-    size: large
+    size: wide
+
   - slug: work-02
     title: ESC
     artist: 20”x17½”
@@ -52,19 +46,21 @@ artworks:
     height: 1280
     crop: '50% 50%'
     size: small
-  - slug: work-03
-    title: Unfiltered
-    artist: 14”x17”
+
+  - slug: work-06
+    title: Inverse Lives
+    artist: 25”x19”
     year: 2025
-    material: Graphite on Paper
-    description: This self-portrait portrays my raw and authentic self in a moment of stillness. I explored blending techniques and values.
+    material: Watercolor & Colored Pencil on Watercolor Paper
+    description: Observing a fish tank reveals a world of its own. Reversing the roles of pets and humans, this piece explores themes of control and manipulation, using the depth of physical layers to translate this psychological barrier.
     reference: false
-    image: /media/placeholders/Unfiltered.PNG
-    alt: Placeholder drawing numbered 03, a square panel.
-    width: 805
-    height: 998
+    image: /media/placeholders/Inverse Lives.jpg
+    alt: Placeholder drawing numbered 06, a wide panel.
+    width: 2536
+    height: 1970
     crop: '50% 50%'
-    size: offset
+    size: small
+    
   - slug: work-04
     title: Good Enough to Eat
     artist: 22”x28”
@@ -78,41 +74,13 @@ artworks:
     height: 2131
     crop: '50% 50%'
     size: wide
-  - slug: work-05
-    title: Not My Bathroom
-    artist: 16”x20”
-    year: 2026
-    material: Oil Painting on Canvas
-    description: Moving into a new house made me feel like a stranger in my own supposed home. Through the use of cool, muted colors and contrasting shadows, I reinterpreted an otherwise normal bathroom into an unwelcoming, cold space.
 
-    reference: false
-    image: /media/placeholders/Not My Bathroom.jpg
-    alt: Placeholder drawing numbered 05, a tall panel.
-    width: 2096
-    height: 2630
-    crop: '50% 50%'
-    size: large
-  - slug: work-06
-    title: Inverse Lives
-    artist: 25”x19”
-    year: 2025
-    material: Watercolor & Colored Pencil on Watercolor Paper
-    description: Observing a fish tank reveals a world of its own. Reversing the roles of pets and humans, this piece explores themes of control and manipulation, using the depth of physical layers to translate this psychological barrier.
-
-    reference: false
-    image: /media/placeholders/Inverse Lives.jpg
-    alt: Placeholder drawing numbered 06, a wide panel.
-    width: 2536
-    height: 1970
-    crop: '50% 50%'
-    size: small
   - slug: work-07
     title: Waterbuttle
     artist: 20”x24”
     year: 2025
     material: Acrylic Painting on Canvas
     description: This piece explores perspective through direct observation. Through the awkward angle and placement of the bottle, I portrayed a partial loss of human control, depicting how waste has become permanently embedded within our environment.
-
     reference: false
     image: /media/placeholders/Waterbuttle.jpg
     alt: Placeholder drawing numbered 07, a square panel.
@@ -120,48 +88,7 @@ artworks:
     height: 2400
     crop: '50% 50%'
     size: offset
-  - slug: work-08
-    title: Should I Drop Out?
-    artist: 15”x13”x9”
-    year: 2025
-    material: Mixed Media (Paper Clay, Cardboard, Wood)
-    description: Inspired by personal experiences of feeling overwhelmed in class, this piece captures the weight of academic pressure. Clay’s malleable, slumping forms show vulnerability, while the megaphone visualizes one-way communication of the teacher shifting yellow-to-red with frustration.
 
-    reference: false
-    image: /media/placeholders/Should I Drop Out.jpg
-    alt: Placeholder drawing numbered 08, a landscape panel.
-    width: 2476
-    height: 1648
-    crop: '50% 50%'
-    size: wide
-  - slug: work-09
-    title: Washed Away
-    artist: 20”x18”
-    year: 2026
-    material: Graphite on Paper
-    description: This is an observational study exploring glass transparency and light refraction within an unorganized sink. Capturing the focal details and tonal contrasts, the clean yet scattered, empty glasses become a metaphor for emotional depletion.
-
-    reference: false
-    image: /media/placeholders/Washed Away.jpg
-    alt: Placeholder drawing numbered 09, a tall panel.
-    width: 2433
-    height: 1855
-    crop: '50% 50%'
-    size: large
-  - slug: work-10
-    title: Ordinary Day
-    artist: 12”x18"
-    year: 2025
-    material: Watercolor Painting on Paper
-    description: This piece explores finding appreciation in subtle day-to-day moments with the use of transparent watercolor washes to capture soft light filtering through patterned curtains. The linear perspective of the interior space contrasts the organic scene outside the window. 
-
-    reference: false
-    image: /media/placeholders/Ordinary Day.jpg
-    alt: Placeholder drawing numbered 10, a wide panel.
-    width: 1288
-    height: 2037
-    crop: '50% 50%'
-    size: small
   - slug: work-11
     title: Bloom
     artist: 20”x24”
@@ -175,13 +102,13 @@ artworks:
     height: 1800
     crop: '50% 50%'
     size: wide
+
   - slug: work-12
     title: Complementary Refractions
     artist: 11”x14”
     year: 2026
     material: Oil Painting on Canvas
     description: Through direct observation, I explored light refraction across various textures, from the translucent grape skin to the plastic cups. I prioritized foreground detail, contrasting central focal points against a softly blurred background.
-
     reference: false
     image: /media/placeholders/Complementary Refractions.jpg
     alt: Placeholder drawing numbered 11, a square panel.
@@ -189,4 +116,80 @@ artworks:
     height: 2334
     crop: '50% 50%'
     size: offset
+  
+  - slug: work-05
+    title: Not My Bathroom
+    artist: 16”x20”
+    year: 2026
+    material: Oil Painting on Canvas
+    description: Moving into a new house made me feel like a stranger in my own supposed home. Through the use of cool, muted colors and contrasting shadows, I reinterpreted an otherwise normal bathroom into an unwelcoming, cold space.
+    reference: false
+    image: /media/placeholders/Not My Bathroom.jpg
+    alt: Placeholder drawing numbered 05, a tall panel.
+    width: 2096
+    height: 2630
+    crop: '50% 50%'
+    size: large
+
+  - slug: work-10
+    title: Ordinary Day
+    artist: 12”x18"
+    year: 2025
+    material: Watercolor Painting on Paper
+    description: This piece explores finding appreciation in subtle day-to-day moments with the use of transparent watercolor washes to capture soft light filtering through patterned curtains. The linear perspective of the interior space contrasts the organic scene outside the window. 
+    reference: false
+    image: /media/placeholders/Ordinary Day.jpg
+    alt: Placeholder drawing numbered 10, a wide panel.
+    width: 1288
+    height: 2037
+    crop: '50% 50%'
+    size: small
+
+  - slug: work-03
+    title: Unfiltered
+    artist: 14”x17”
+    year: 2025
+    material: Graphite on Paper
+    description: This self-portrait portrays my raw and authentic self in a moment of stillness. I explored blending techniques and values.
+    reference: false
+    image: /media/placeholders/Unfiltered.PNG
+    alt: Placeholder drawing numbered 03, a square panel.
+    width: 805
+    height: 998
+    crop: '50% 50%'
+    size: offset
+
+  - slug: work-01
+    title: Gaze
+    artist: 18”x24”
+    year: 2026
+    material: Charcoal on Paper
+    description: This study explores proportional accuracy with a compressed, guarded figure. The slightly offset positioning of the subject and shriveled pose, suggests hesitation while high contrast of the anatomical contours capture the values of the clothing wrinkles. 
+    # true = a museum work, so its source link is kept on the artwork page.
+    reference: false
+    # A file in public/media. For a museum work, use image_id and source instead.
+    image: /media/placeholders/Gaze.jpg
+    alt: Placeholder drawing numbered 01, a tall panel.
+    # The real proportions of the image file, in pixels.
+    width: 1200
+    height: 1500
+    # The part of the work the close-up shows: horizontal% vertical%.
+    crop: '50% 50%'
+    # How much space the work takes in the collection.
+    # large | small | offset | wide
+    size: large
+
+  - slug: work-09
+    title: Washed Away
+    artist: 20”x18”
+    year: 2026
+    material: Graphite on Paper
+    description: This is an observational study exploring glass transparency and light refraction within an unorganized sink. Capturing the focal details and tonal contrasts, the clean yet scattered, empty glasses become a metaphor for emotional depletion.
+    reference: false
+    image: /media/placeholders/Washed Away.jpg
+    alt: Placeholder drawing numbered 09, a tall panel.
+    width: 2433
+    height: 1855
+    crop: '50% 50%'
+    size: large
   

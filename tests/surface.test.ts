@@ -124,7 +124,7 @@ test('motion runs for every visitor instead of following the OS animation settin
   // Nothing in JavaScript reads the preference either: the app's reveal observer, the cursor,
   // image arrivals, playback, the atmosphere, and the router all run unconditionally.
   for (const file of ['src/App.tsx', 'src/components/Experience.tsx', 'src/components/Media.tsx',
-    'src/components/VideoPlayer.tsx', 'src/components/MeAtmosphere.tsx', 'src/lib/router.ts']) {
+    'src/components/VideoPlayer.tsx', 'src/components/PhotoStrip.tsx', 'src/components/MeAtmosphere.tsx', 'src/lib/router.ts']) {
     assert.doesNotMatch(readFileSync(new URL(`../${file}`, import.meta.url), 'utf8'), /prefers-reduced-motion\s*:/, file)
   }
   // The pointer and autoplay policies take capability and safety as inputs, not motion.

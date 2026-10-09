@@ -1,8 +1,9 @@
 import { useState, type CSSProperties } from 'react'
-import { artImage, artSrcSet, artworks, layout, messages, navigationLabel, pages, papers, recordings, type Artwork, type Paper } from '@/content'
+import { artImage, artSrcSet, artworks, layout, messages, navigationLabel, pages, papers, type Artwork, type Paper } from '@/content'
 import { Image, Inspector } from '@/components/Media'
 import { PdfViewer } from '@/components/PdfViewer'
 import { ImageDeck } from '@/components/ImageDeck'
+import { PhotoStrip } from '@/components/PhotoStrip'
 import { VideoPlayer } from '@/components/VideoPlayer'
 import { PageLink } from '@/components/PageLink'
 import { workNeighbours } from '@/lib/work-sequence'
@@ -126,20 +127,31 @@ export function ArtworkPage({ work }: { work: Artwork }) {
 
 export function MusicPage() {
   const music = pages.music
-  const [openRecording, setOpenRecording] = useState<string | null>(null)
+  const video = music.feature.video
   return (
     <>
       <div className="page-heading enter"><h1 id="page-title" tabIndex={-1}>{music.heading}</h1><p>{music.introduction}</p></div>
-      {/* The films lead the page, one after another, each spanning the window rather than a
-          column: a performance is what this page is about. The first plays on its own, muted,
-          once it is in view; the films below it wait to be started. A film whose file is not
-          there yet keeps its still and says so, rather than showing a player with nothing to
-          play. */}
+      {/* The orchestra film opens the page beside its side text: the film takes the wide
+          column and the heading, note, and practice words sit alongside it. It starts on
+          its own, muted, once it is in view. A film whose file is not there yet keeps its
+          still and says so, rather than showing a player with nothing to play. */}
+      <section className="music-feature enter enter-delay" data-side={layout.music.featureSide} aria-label="Orchestra and experience">
+        {video.src
+          ? <VideoPlayer autoplay label={music.feature.heading} src={video.src} poster={video.poster} caption={video.caption ?? ''} demo={video.demo} />
+          : <div className="film-empty" role="status">
+            <Image src={video.poster} alt={`Still for the ${music.feature.heading} film.`} width={1600} height={900} loading="lazy" />
+            <p>{messages.recordingMissingHeading}</p>
+            <p>{messages.recordingMissingCopy}</p>
+          </div>}
+        <div className="music-experience"><h2>{music.feature.heading}</h2><p>{music.feature.copy}</p>{music.feature.note && <p className="preview-copy">{music.feature.note}</p>}{layout.music.showTopics && <div className="music-topics">{music.feature.topics.map((topic) => <span key={topic}>{topic}</span>)}</div>}</div>
+      </section>
+      {/* The films below run the full width of the window, one after another, each played
+          right here with its caption as the text under the player. They wait to be started. */}
       <section className="music-films enter" aria-label="Performances">
         {music.films.map((film, index) => (
           <div className="music-film" key={`${film.title}-${index}`}>
             {film.src
-              ? <VideoPlayer autoplay={index === 0} label={film.title} src={film.src} poster={film.poster} caption={film.caption ?? ''} demo={film.demo} />
+              ? <VideoPlayer label={film.title} src={film.src} poster={film.poster} caption={film.caption ?? ''} demo={film.demo} />
               : <div className="film-empty" role="status">
                 <Image src={film.poster} alt={`Still for the ${film.title} film.`} width={1600} height={900} loading="lazy" />
                 <p>{messages.recordingMissingHeading}</p>
@@ -148,24 +160,9 @@ export function MusicPage() {
           </div>
         ))}
       </section>
-      <section className="music-experience reveal" aria-label="Experience and practice">
-        <h2>{music.feature.heading}</h2>
-        <p>{music.feature.copy}</p>
-        {music.feature.note && <p className="preview-copy">{music.feature.note}</p>}
-        {layout.music.showTopics && <div className="music-topics">{music.feature.topics.map((topic) => <span key={topic}>{topic}</span>)}</div>}
-      </section>
-      <section className="recording-collection" aria-label="Repertoire and recordings">
-        {music.companion && <figure className="collection-companion reveal"><Image src={music.companion.image} alt={music.companion.alt} width={900} height={1080} loading="lazy" /></figure>}
-        {recordings.map((recording, index) => <article key={recording.title} className={`recording reveal recording-${index}`}>
-          <Image src={recording.image} alt={`Stock music photograph for the ${recording.title} recording slot.`} width={1200} height={800} loading="lazy" />
-          <div className="recording-caption"><h2>{recording.title}</h2><button data-magnetic data-cursor={openRecording === recording.title ? 'Close' : 'Play recording'} className="text-link" aria-label={`${openRecording === recording.title ? 'Close' : 'Open'} ${recording.title} recording`} aria-controls={`recording-${index}`} aria-expanded={openRecording === recording.title} onClick={() => setOpenRecording((current) => current === recording.title ? null : recording.title)}>{openRecording === recording.title ? 'Close' : 'Recording'} <span aria-hidden="true">{openRecording === recording.title ? '−' : '+'}</span></button></div>
-          <p className="work-credit">{recording.kind}.</p>
-          <div id={`recording-${index}`} hidden={openRecording !== recording.title}>{openRecording === recording.title && (recording.src ? <VideoPlayer src={recording.src} poster={recording.image} label={recording.title} caption={recording.caption ?? ''} demo={false} /> : <div className="recording-empty" role="status"><p>{messages.recordingMissingHeading}</p><p>{messages.recordingMissingCopy}</p></div>)}</div>
-        </article>)}
-      </section>
-      {/* The photographs close the page: one deck the reader presses through. */}
+      {/* The photographs close the page as one strip the reader turns with the arrows. */}
       {music.photos.length > 0 && <section className="music-photos reveal" aria-label="Performance photographs">
-        <ImageDeck images={music.photos} width={1600} height={1000} loading="lazy" />
+        <PhotoStrip images={music.photos} />
       </section>}
     </>
   )

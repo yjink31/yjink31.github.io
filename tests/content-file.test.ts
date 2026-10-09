@@ -66,18 +66,18 @@ test('every content file explains itself to a non-technical editor', () => {
 })
 
 test('every curated layout choice is documented next to its allowed values and wired to the page', () => {
-  for (const setting of ['show_topics:', 'copy_side:']) {
+  for (const setting of ['feature_side:', 'show_topics:', 'copy_side:']) {
     assert.ok(siteSources.site.includes(setting), `${setting} should be documented in site.yaml`)
   }
   assert.ok(siteSources.media.artworks.includes('large | small | offset | wide'))
-  assert.equal(siteSources.site.match(/left \| right/g)?.length, 1)
+  assert.equal(siteSources.site.match(/left \| right/g)?.length, 2)
   // Each option reaches a real composition, and the mirrored one has CSS behind it.
   assert.match(pagesSource, /data-copy=\{layout\.detail\.copySide\}/)
   assert.match(css, /\.artwork-detail\[data-copy='left'\] \{ grid-template-columns/)
-  // The Music page's films run the full width in file order, so there is no side left
-  // for a "featured film side" choice and the option is gone with its CSS.
-  assert.doesNotMatch(siteSources.site, /feature_side/)
-  assert.doesNotMatch(css, /\.music-feature/)
+  // The featured film sits beside its side text, so the choice decides which side the
+  // film takes, and the mirrored composition has real CSS behind it.
+  assert.match(pagesSource, /data-side=\{layout\.music\.featureSide\}/)
+  assert.match(css, /\.music-feature\[data-side='right'\] \{ grid-template-columns: 4fr 8fr; \}/)
 })
 
 test('the front page is one bento grid of the whole collection, four works per row', () => {
@@ -169,19 +169,13 @@ test('the resume link is optional and can be emptied from the file', () => {
   assert.equal(parseSite(empty).pages.art.hero.resumeUrl, undefined)
 })
 
-test('the music companion still fills the collection\'s open corner', () => {
-  assert.ok(site.pages.music.companion?.image)
-  assert.ok(site.pages.music.companion?.alt)
-  // Pinned into the grid's top-left and stretched to the row, so it never reflows the
-  // recording slots that carry the offset.
-  assert.match(pagesSource, /music\.companion && <figure className="collection-companion reveal">/)
-  assert.match(css, /\.collection-companion \{ grid-column: 1 \/ 6; grid-row: 1; align-self: stretch; \}/)
-  // Emptying the image drops the still and leaves the recordings alone.
-  const hidden = withFile('music', editLine(siteSources.pages.music, /^  image: https.*$/m, '  image:'))
-  assert.equal(parseSite(hidden).pages.music.companion, undefined)
-  // A misspelled setting inside the block names the file and the setting.
-  const broken = withFile('music', editLine(siteSources.pages.music, /^  alt: .*$/m, '  caption: piano'))
-  assert.throws(() => parseSite(broken), /content\/pages\/music\.yaml → companion: has an unknown setting "caption"/)
+test('the recording slots and their companion are gone from the Music page', () => {
+  // The page is the orchestra film with its side text, the films under it, and the
+  // photograph strip. The stock slots and the companion still are no longer composed,
+  // and the page's content file carries no companion block to feed them.
+  assert.doesNotMatch(pagesSource, /recording-collection|collection-companion|recording-empty/)
+  assert.doesNotMatch(siteSources.pages.music, /^companion:/m)
+  assert.doesNotMatch(css, /\.recording|collection-companion/)
 })
 
 test('a paper panel must point at something another file defines', () => {

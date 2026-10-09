@@ -40,6 +40,9 @@ empty it.
 ```yaml
 layout:
   music:
+    # Which side of the Music page the orchestra film takes, with its text beside it.
+    # left | right
+    feature_side: left
     # Whether the practice words appear under the experience text.
     # true | false
     show_topics: true
@@ -58,9 +61,12 @@ layout:
   each block when the work is supplied. Reference images use the Art Institute's `image_id`;
   Yujin's own work uses `image: /media/work.webp` with optional `src_set`, `close_up`, and
   `high_resolution`.
-- `content/media/recordings.yaml` and `content/media/papers.yaml`: the recording slots and
-  the research-paper panels. `papers.*.url` points at placeholder PDFs for now; leave `src`,
-  `url`, and `citation` empty and the panels say so honestly instead.
+- `content/media/recordings.yaml` and `content/media/papers.yaml`: the recording-slot
+  collection and the research-paper panels. The Music page no longer composes the
+  recording slots — it is the orchestra film with its side text, the films under it, and
+  the photograph strip — but the collection still parses, ready for a surface to use
+  again. `papers.*.url` points at placeholder PDFs for now; leave `src`, `url`, and
+  `citation` empty and the panels say so honestly instead.
 - `messages`: sentences shown while something has not been supplied yet.
 
 Put approved files in `public/media` and refer to them as `/media/portrait.webp`. The
@@ -92,24 +98,32 @@ file alone — the surrounding CSS decides the slot it fills. The control is a t
 button over the frame, so nothing is drawn over the image and the cursor hint and focus
 ring carry the affordance. Up to two of the next cards peek out behind the frame, edge
 only, so the deck reads as a stack there is more to leaf through. The Research page ships
-two demos: the project image and each smaller project, and the Music page uses one for
-its photographs.
+two demos: the project image and each smaller project. The Music page's photographs are
+no longer a deck: they close the page as a strip that turns like a ring.
 
 ### The Music page
 
-The page leads with its films: `films:` in [content/pages/music.yaml](content/pages/music.yaml)
-is a list, and each entry runs the full width of the window, one after another, played in
-place by the same [VideoPlayer](src/components/VideoPlayer.tsx) the recording slots use.
-The site never hands a video file to the browser to open or download. The first film starts
-on its own, muted, once it is in view; the films below it wait for a press. A film whose
-`src` is still empty keeps its `poster` and says so, instead of showing a player with
-nothing behind it, so a film can be listed before its file exists — put the file in
-`public/media/music` and write `/media/music/<file>` as its `src`. The note under the films
-(`feature:`) and the recording slots below it are unchanged, and the photographs that close
-the page are one deck: `photos:` takes the same `image`/`alt` entries as any other deck,
-plus each picture's real `width`/`height`, so a mixed set of upright and wide photographs is
-shown whole rather than cropped to one shape. Leave the block out, or empty it, and the page
-simply ends after the recordings.
+The page opens with the orchestra film beside its side text: `feature:` in
+[content/pages/music.yaml](content/pages/music.yaml) holds the film (`feature.video:`)
+and the heading, note, and practice words alongside it, and `layout.music.feature_side`
+chooses which side the film takes. Below it, `films:` is a list and each entry runs the
+full width of the window, one after another, played in place by the same
+[VideoPlayer](src/components/VideoPlayer.tsx). The site never hands a video file to the
+browser to open or download. The orchestra film starts on its own, muted, once it is in
+view; the films below wait for a press. A film whose `src` is still empty keeps its
+`poster` and says so, instead of showing a player with nothing behind it, so a film can
+be listed before its file exists — put the file in `public/media/music` and write
+`/media/music/<file>` as its `src` (the solo repertoire film is waiting for exactly
+that). Each film's `caption` is the text shown under its player.
+
+The photographs close the page as a strip that turns like a ring:
+[PhotoStrip](src/components/PhotoStrip.tsx) places every picture on one circle in three
+dimensions, and the **Previous photo** / **Next photo** arrows turn the circle one place
+at a time, wrapping at both ends so the strip never runs out in either direction; the
+arrow keys do the same. `photos:` takes the same `image`/`alt` entries as any other
+picture list, plus each picture's real `width`/`height`, so a mixed set of upright and
+wide photographs is shown whole rather than cropped to one shape. Leave the block out,
+or empty it, and the page simply ends after the films.
 
 ### The resume
 
@@ -165,6 +179,7 @@ so no choice needs new CSS.
 
 | Setting | Values | Effect |
 | --- | --- | --- |
+| `layout.music.feature_side` | `left`, `right` | Which side the orchestra film takes beside its text |
 | `layout.music.show_topics` | `true`, `false` | The practice words under the experience text |
 | `layout.detail.copy_side` | `left`, `right` | Which side an artwork page's facts take |
 | `artworks[].size` | `large`, `small`, `offset`, `wide` | Room a work takes in the collection |
@@ -189,13 +204,8 @@ the grid renders, so the two can never disagree.
 
 Mirrored and reordered compositions are desktop-only: below 768px every section is one
 column in semantic reading order, as [the design plan](notes/design_plan.md) requires.
-Adding a fourth recording still lands in a deliberate column rather than a bare grid cell.
 The bento grid keeps the same rule: four works per row, two on a tablet, one per row on a
 phone.
-On the Music page the offset leaves the collection grid's top-left corner open, so the
-`companion` block in [content/pages/music.yaml](content/pages/music.yaml) holds a still that
-fills it, stretched to the first row's height so it never reflows the slots beside it; empty
-its `image` and the corner is left open again.
 
 The files are validated as they load. A missing field, a value outside its allowed set, a
 misspelled setting, a repeated slug, a colour that is not a colour, a featured work or
