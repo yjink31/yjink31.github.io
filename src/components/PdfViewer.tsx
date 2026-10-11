@@ -11,7 +11,7 @@ type Status = 'loading' | 'ready' | 'error'
  * weight out of the main bundle, and each page is rasterised at the frame's own width so the
  * text stays crisp. A browser that cannot load or draw the file falls back to a plain link.
  */
-export function PdfViewer({ url, label }: { url: string; label: string }) {
+export function PdfViewer({ url, label, noun = 'resume' }: { url: string; label: string; noun?: string }) {
   const host = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
   const [status, setStatus] = useState<Status>('loading')
@@ -54,7 +54,7 @@ export function PdfViewer({ url, label }: { url: string; label: string }) {
           canvas.width = Math.floor(viewport.width * ratio)
           canvas.height = Math.floor(viewport.height * ratio)
           const context = canvas.getContext('2d')
-          if (!context) throw new Error('This browser could not draw the resume.')
+          if (!context) throw new Error(`This browser could not draw the ${noun}.`)
           await page.render({ canvasContext: context, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] }).promise
           if (cancelled) return
           pages.appendChild(canvas)
@@ -72,13 +72,13 @@ export function PdfViewer({ url, label }: { url: string; label: string }) {
       cancelled = true
       void task?.destroy()
     }
-  }, [url, width])
+  }, [url, width, noun])
 
   return (
     <div className="resume-viewer">
       <div ref={host} className="resume-viewer-pages" role="img" aria-label={label} />
-      {status === 'loading' && <p className="resume-status" role="status">Loading the resume…</p>}
-      {status === 'error' && <p className="resume-status">This browser cannot show the resume here. <a className="text-link" href={url} target="_blank" rel="noreferrer">Open the resume <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a></p>}
+      {status === 'loading' && <p className="resume-status" role="status">Loading the {noun}…</p>}
+      {status === 'error' && <p className="resume-status">This browser cannot show the {noun} here. <a className="text-link" href={url} target="_blank" rel="noreferrer">Open the {noun} <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a></p>}
     </div>
   )
 }

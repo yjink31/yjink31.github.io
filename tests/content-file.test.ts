@@ -191,15 +191,20 @@ test('a paper panel must point at something another file defines', () => {
   assert.throws(() => parseSite(duplicate), /content\/media\/artworks\.yaml → artworks: uses the same slug twice/)
 })
 
-test('the GHP pair stays an unequal pair of exactly two images', () => {
+test('the GHP photographs form a deck beside the videos', () => {
   // Deck blocks share the `images:` key, so edit from the ghp section on to be sure the
-  // extra image lands in the pair and not in the project's deck above it.
+  // extra image lands in the row and not in the project's deck above it.
   const start = siteSources.pages.research.indexOf('\nghp:')
   assert.ok(start > -1, 'research.yaml should still contain a ghp section')
   const ghp = editLine(siteSources.pages.research.slice(start), /^(  images:)$/m,
     '$1\n    - image: /media/portrait.jpg\n      alt: An extra reference image.')
   const extra = withFile('research', siteSources.pages.research.slice(0, start) + ghp)
-  assert.throws(() => parseSite(extra), /content\/pages\/research\.yaml → ghp\.images: needs exactly two images/)
+  // A row may carry more than one photograph: they form the deck beside the videos,
+  // and the added picture joins that deck rather than the project's deck above it.
+  const grown = parseSite(extra)
+  assert.equal(grown.pages.research.ghp.images.length, site.pages.research.ghp.images.length + 1)
+  assert.equal(grown.pages.research.ghp.images[0].image, '/media/portrait.jpg')
+  assert.ok(grown.pages.research.project.images.every((picture) => picture.image !== '/media/portrait.jpg'))
 })
 
 test('third-party notices are gone while the museum source link and the images stay', () => {
@@ -220,7 +225,8 @@ test('third-party notices are gone while the museum source link and the images s
 })
 
 test('every local media path in the content files exists in public/', () => {
-  const local = [...allFiles.matchAll(/^\s*(?:- )?(?:image|poster|src|url|resume_url):\s*(\/media\/[^\s]+)$/gm)].map((match) => match[1])
+  // A file name may carry spaces (a screenshot does), so the path runs to the line's end.
+  const local = [...allFiles.matchAll(/^\s*(?:- )?(?:image|poster|src|url|resume_url):\s*(\/media\/.*\S)\s*$/gm)].map((match) => match[1])
   // The portrait, the resume, and the two paper placeholders.
   assert.ok(local.length >= 4, `expected local media paths, found ${local.length}`)
   for (const path of local) {
@@ -248,9 +254,11 @@ test('every page still parses to real content, and the fixed wording survives', 
   assert.ok(site.pages.art.hero.resumeUrl?.startsWith('/media/'))
   assert.ok(site.name.trim().length > 0)
   for (const message of Object.values(site.messages)) assert.ok(message.trim().length > 0)
-  // The brief fixes the GHP title, and the pair stays two images.
-  assert.equal(site.pages.research.ghp.title, 'GHP')
-  assert.equal(site.pages.research.ghp.images.length, 2)
+  // The brief's GHP section keeps its name in the title the page ships ("Governor's
+  // Honors Program (GHP)"), and the row is a photo deck beside its two videos.
+  assert.equal(site.pages.research.ghp.title, "Governor's Honors Program (GHP)")
+  assert.equal(site.pages.research.ghp.images.length, 8)
+  assert.equal(site.pages.research.ghp.videos.length, 2)
   // A page's paper panel resolves to a real entry.
   assert.ok(site.pages.research.project.paper in site.papers)
   assert.ok(site.pages.research.ghp.paper in site.papers)

@@ -85,6 +85,8 @@ test('the deck reaches its surfaces through the shared image component', () => {
   assert.match(css, /\.image-deck \{ position: relative; display: block; \}/)
   assert.match(css, /\.deck-hit \{ position: absolute; inset: 0;/)
   assert.match(css, /\.research-project > \.image-deck \{ grid-column: 1 \/ 10;/)
-  // The frame just inside the deck keeps the composition the single image had.
-  assert.match(css, /\.research-project > \.image-deck > \.image-frame \{ aspect-ratio: 16 \/ 9; \}/)
+  // Each picture declares its own proportions and is shown whole, so the surface no
+  // longer cuts the set to one shape.
+  assert.doesNotMatch(css, /\.research-project > \.image-deck > \.image-frame \{ aspect-ratio/)
+  assert.ok(site.pages.research.project.images.every((picture) => picture.width && picture.height))
 })

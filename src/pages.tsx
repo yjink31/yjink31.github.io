@@ -149,14 +149,12 @@ export function MusicPage() {
           right here with its caption as the text under the player. They wait to be started. */}
       <section className="music-films enter" aria-label="Performances">
         {music.films.map((film, index) => (
-          <div className="music-film" key={`${film.title}-${index}`}>
+          <div className="music-film" data-side={film.side} key={`${film.title}-${index}`}>
             {film.src
-              ? <VideoPlayer label={film.title} src={film.src} poster={film.poster} caption={film.caption ?? ''} demo={film.demo} />
-              : <div className="film-empty" role="status">
-                <Image src={film.poster} alt={`Still for the ${film.title} film.`} width={1600} height={900} loading="lazy" />
-                <p>{messages.recordingMissingHeading}</p>
-                <p>{messages.recordingMissingCopy}</p>
-              </div>}
+              ? <VideoPlayer label={film.title} src={film.src} poster={film.poster} demo={film.demo} />
+              : <div className="film-empty"><Image src={film.poster} alt={`Still for the ${film.title} film.`} width={1600} height={900} loading="lazy" /></div>}
+            {/* The description stands beside the film, on the side opposite it. */}
+            <div className="film-copy" role={film.src ? undefined : 'status'}>{film.caption && <p className="film-description">{film.caption}</p>}{!film.src && <><p>{messages.recordingMissingHeading}</p><p>{messages.recordingMissingCopy}</p></>}</div>
           </div>
         ))}
       </section>
@@ -169,7 +167,7 @@ export function MusicPage() {
 }
 
 function PaperWidget({ paper }: { paper: Paper }) {
-  return <div className="paper-widget" data-light><span className="paper-label">Research paper</span><h3>{paper.title}</h3><p>{paper.citation ?? messages.paperMissing}</p>{paper.url ? <a data-magnetic data-cursor="Read paper" className="text-link paper-open" href={paper.url} target="_blank" rel="noreferrer">Open paper <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a> : <span className="paper-unavailable">Document pending</span>}</div>
+  return <div className="paper-widget" data-light><span className="paper-label">Research paper</span><h3>{paper.title}</h3><p>{paper.citation ?? messages.paperMissing}</p>{paper.url && <PdfViewer url={paper.url} label={`${paper.title}, as a PDF`} noun="paper" />}{paper.url ? <a data-magnetic data-cursor="Read paper" className="text-link paper-open" href={paper.url} target="_blank" rel="noreferrer">Open paper <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a> : <span className="paper-unavailable">Document pending</span>}</div>
 }
 
 export function ResearchPage() {
@@ -179,12 +177,18 @@ export function ResearchPage() {
       <div className="page-heading enter"><h1 id="page-title" tabIndex={-1}>{research.heading}</h1><p>{research.introduction}</p></div>
       <section className="research-project enter enter-delay" aria-labelledby="research-project-title">
         <ImageDeck images={research.project.images} width={1600} height={1000} fetchPriority="high" />
-        <div className="research-project-copy"><h2 id="research-project-title">{research.project.heading}</h2><p>{research.project.copy}</p>{research.project.note && <p className="preview-copy">{research.project.note}</p>}</div>
-        <PaperWidget paper={papers[research.project.paper]} />
+        {/* The section's text with its optional second document under it: together they
+            fill the space beside the preview deck and the paper. */}
+        <div className="research-project-side">
+          <div className="research-project-copy"><h2 id="research-project-title">{research.project.heading}</h2><p>{research.project.copy}</p>{research.project.note && <p className="preview-copy">{research.project.note}</p>}</div>
+          {research.project.sidePaper && <PaperWidget paper={papers[research.project.sidePaper]} />}
+        </div>
+        <div className="research-paper-slot">{research.project.preview && <ImageDeck className="research-preview" images={research.project.preview} width={747} height={559} loading="lazy" />}<PaperWidget paper={papers[research.project.paper]} /></div>
       </section>
       <section className="ghp-section reveal" aria-labelledby="ghp-title">
         <h2 id="ghp-title">{research.ghp.title}</h2>
-        <div className="ghp-images">{research.ghp.images.map((image, index) => <Image key={image.image} src={image.image} alt={image.alt} width={index === 0 ? 1100 : 900} height={index === 0 ? 1000 : 1100} loading="lazy" />)}</div>
+        {/* The photo deck takes the photograph's place on the left; the videos stand right. */}
+        <div className="ghp-images"><ImageDeck images={research.ghp.images} width={1100} height={1000} loading="lazy" />{research.ghp.videos.length > 0 && <div className="ghp-videos">{research.ghp.videos.map((video) => <VideoPlayer key={video.src} label={video.title} src={video.src} caption={video.caption ?? ''} />)}</div>}</div>
         <div className="ghp-copy"><div><h3>{research.ghp.heading}</h3><p>{research.ghp.copy}</p>{research.ghp.note && <p className="preview-copy">{research.ghp.note}</p>}</div><PaperWidget paper={papers[research.ghp.paper]} /></div>
       </section>
       <section className="smaller-projects reveal" aria-labelledby="smaller-projects-title"><h2 id="smaller-projects-title">{research.smaller.title}</h2><div className="small-project-grid">{research.smaller.projects.map((project) => <article key={project.title}><ImageDeck images={project.images} width={1000} height={750} loading="lazy" /><h3>{project.title}</h3><p>{project.copy}</p><span className="work-credit">{project.credit}</span></article>)}</div></section>

@@ -114,6 +114,8 @@ export type ArtContent = {
  */
 export type MusicFilm = {
   title: string
+  /** Which side of its row the film takes; the description stands on the other. */
+  side: 'left' | 'right'
   src?: string
   poster: string
   caption?: string
@@ -135,7 +137,7 @@ export type MusicContent = {
     video: { src?: string; poster: string; caption?: string; demo: boolean }
     topics: string[]
   }
-  /** The films under the feature, in order, each one the full width of the window. */
+  /** The films under the feature, in order, each a row with its description beside it. */
   films: MusicFilm[]
   /** Optional: the photographs at the bottom of the page, shown as a turning strip. */
   photos: Picture[]
@@ -144,8 +146,8 @@ export type MusicContent = {
 export type ResearchContent = {
   heading: string
   introduction: string
-  project: { images: Picture[]; heading: string; copy: string; note?: string; paper: string }
-  ghp: { title: string; heading: string; copy: string; note?: string; paper: string; images: Picture[] }
+  project: { images: Picture[]; heading: string; copy: string; note?: string; preview?: Picture[]; paper: string; sidePaper?: string }
+  ghp: { title: string; heading: string; copy: string; note?: string; paper: string; images: Picture[]; videos: { title: string; src: string; caption?: string }[] }
   smaller: { title: string; projects: { title: string; copy: string; images: Picture[]; credit: string }[] }
 }
 
@@ -189,8 +191,8 @@ export function parseSite(sources: SiteSources): Site {
 
   // Cross-references cross files now, so a mistyped slug would otherwise leave a
   // page pointing nowhere. Each error names the file that holds the reference.
-  for (const [path, key] of [['project.paper', pages.research.project.paper], ['ghp.paper', pages.research.ghp.paper]] as const) {
-    if (!(key in papers)) {
+  for (const [path, key] of [['project.paper', pages.research.project.paper], ['project.side_paper', pages.research.project.sidePaper], ['ghp.paper', pages.research.ghp.paper]] as const) {
+    if (key !== undefined && !(key in papers)) {
       fail(`${PAGE_FILES.research} → ${path}`, `points at a paper named "${key}", which ${MEDIA_FILES.papers} does not define under papers`)
     }
   }
@@ -311,9 +313,11 @@ function musicPage(page: Mapping): MusicContent {
     },
     films: items(page.films, 'films').map((item, index) => {
       const where = `films[${index}]`
-      only(item, where, ['title', 'src', 'poster', 'caption', 'demo'])
+      only(item, where, ['title', 'side', 'src', 'poster', 'caption', 'demo'])
       return {
         title: text(item, 'title', where),
+        // Left unless the editor says otherwise: the description takes the other side.
+        side: item.side === undefined || item.side === null ? 'left' : choice(item, 'side', where, ['left', 'right']),
         // Empty until the file exists: the still and the note stand in for the player.
         src: optionalText(item, 'src', where),
         poster: text(item, 'poster', where),
@@ -329,9 +333,9 @@ function musicPage(page: Mapping): MusicContent {
 function researchPage(page: Mapping): ResearchContent {
   only(page, 'the page', ['heading', 'introduction', 'project', 'ghp', 'smaller'])
   const project = group(page, 'project', '')
-  only(project, 'project', ['image', 'alt', 'images', 'heading', 'copy', 'note', 'paper'])
+  only(project, 'project', ['image', 'alt', 'images', 'heading', 'copy', 'note', 'preview', 'paper', 'side_paper'])
   const ghp = group(page, 'ghp', '')
-  only(ghp, 'ghp', ['title', 'heading', 'copy', 'note', 'images', 'paper'])
+  only(ghp, 'ghp', ['title', 'heading', 'copy', 'note', 'images', 'videos', 'paper'])
   const smaller = group(page, 'smaller', '')
   const research: ResearchContent = {
     heading: text(page, 'heading', ''),
@@ -341,7 +345,10 @@ function researchPage(page: Mapping): ResearchContent {
       heading: text(project, 'heading', 'project'),
       copy: text(project, 'copy', 'project'),
       note: optionalText(project, 'note', 'project'),
+      preview: project.preview === undefined || project.preview === null ? undefined : pictures(group(project, 'preview', 'project'), 'project.preview'),
       paper: text(project, 'paper', 'project'),
+      // The second document panel, left of the paper; omitted, the row keeps one panel.
+      sidePaper: optionalText(project, 'side_paper', 'project'),
     },
     ghp: {
       title: text(ghp, 'title', 'ghp'),
@@ -350,6 +357,12 @@ function researchPage(page: Mapping): ResearchContent {
       note: optionalText(ghp, 'note', 'ghp'),
       paper: text(ghp, 'paper', 'ghp'),
       images: deck(ghp.images, 'ghp.images'),
+      // The videos stand in the slot on the right; leaving the block out keeps the row quiet.
+      videos: ghp.videos === undefined || ghp.videos === null ? [] : items(ghp.videos, 'ghp.videos').map((item, index) => {
+        const where = `ghp.videos[${index}]`
+        only(item, where, ['title', 'src', 'caption'])
+        return { title: text(item, 'title', where), src: text(item, 'src', where), caption: optionalText(item, 'caption', where) }
+      }),
     },
     smaller: {
       title: text(smaller, 'title', 'smaller'),
@@ -365,10 +378,9 @@ function researchPage(page: Mapping): ResearchContent {
       }),
     },
   }
-  // The GHP pair is an unequal two-image composition: wider first, taller second.
-  if (research.ghp.images.length !== 2) {
-    fail('ghp.images', 'needs exactly two images: the wider one first, then the taller one')
-  }
+  // The GHP row is a photo deck beside its videos: the photographs take the wide
+  // slot on the left (one entry is simply one picture), the videos stand in the
+  // slot on the right.
   return research
 }
 

@@ -16,9 +16,9 @@ export const STRIP_REACH = 2
  * ends turn the ring one place at a time and wrap at both ends, so the strip never
  * runs out in either direction.
  *
- * Each picture keeps its own proportions, so a mixed set of upright and wide
- * photographs is shown whole rather than cropped to one shape. A single picture
- * renders inert with no arrows, which is why any `photos` list can be a strip.
+ * Each picture fills a square card, cropped evenly from its centre, so a mixed set of
+ * upright and wide photographs still lines up as one ring. A single picture renders
+ * inert with no arrows, which is why any `photos` list can be a strip.
  */
 export function PhotoStrip({ images, className }: {
   images: Picture[]

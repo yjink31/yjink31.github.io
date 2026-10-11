@@ -42,11 +42,11 @@ test('navigation keeps three destinations, with Art on the front page', () => {
   assert.equal(new Set(navigation.map((item) => item.href)).size, 3)
 })
 
-test('resume and paper links point at placeholders while recordings stay honestly empty', () => {
+test('resume and paper links point at their files while recordings stay honestly empty', () => {
   // The resume now lives with the Art page it belongs to, not on the spine.
   assert.equal(pages.art.hero.resumeUrl, '/media/resume.pdf')
-  assert.equal(papers.project.url, '/media/project-paper.pdf')
-  assert.equal(papers.ghp.url, '/media/ghp-paper.pdf')
+  assert.equal(papers.project.url, '/media/research/RESPONSE_OF_STF_INFLUENCED_LATTICE_STRUCTURES_UNDER_COMPLEX_LOADING.pdf')
+  assert.equal(papers.ghp.url, '/media/research/GHP-CE2026-001.pdf')
   // The orchestra film and the films below are real performances, so none of them
   // repeats as a demo would.
   assert.deepEqual(pages.music.films.map((film) => film.title), ['Bach prelude', 'Solo repertoire'])

@@ -7,7 +7,7 @@ type VideoPlayerProps = {
   autoplay?: boolean
   label?: string
   src: string
-  poster: string
+  poster?: string
   caption?: string
   demo?: boolean
 }
@@ -120,7 +120,7 @@ export function VideoPlayer({
   return (
     <div className="video-player">
       <div className="video-stage">
-        <video ref={video} aria-label={label} src={src} poster={poster} muted={muted} playsInline loop={demo} preload="none"
+        <video ref={video} aria-label={label} src={src} poster={poster} muted={muted} playsInline loop={demo} preload={poster ? 'none' : 'metadata'}
           onPlay={() => { setPlaying(true); setHasPlayed(true) }}
           onPause={() => { setPlaying(false); setBuffering(false) }}
           onTimeUpdate={(event) => syncProgress(event.currentTarget)}

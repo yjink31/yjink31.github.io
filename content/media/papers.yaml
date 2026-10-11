@@ -2,8 +2,8 @@
 # Research: the papers its panels offer.
 #
 # Each key is a paper the research page points at by name, so keep the keys as
-# they are and change only what follows the ":". Both point at a placeholder
-# file for now: drop the real PDF in public/media and point url at it. Leave url
+# they are and change only what follows the ":". Each points at a real PDF in
+# public/media/research/. Leave url
 # empty and the panel says the paper has not been supplied instead of offering a
 # link that leads nowhere.
 #
@@ -20,8 +20,14 @@ papers:
     title: Project paper
     # Optional authors, year, or publication line.
     citation:
-    url: /media/project-paper.pdf
+    url: /media/research/RESPONSE_OF_STF_INFLUENCED_LATTICE_STRUCTURES_UNDER_COMPLEX_LOADING.pdf
   ghp:
     title: GHP paper
     citation:
-    url: /media/ghp-paper.pdf
+    url: /media/research/GHP-CE2026-001.pdf
+  # The 047 document, shown to the left of the project paper. The key is quoted
+  # so it stays the name "047", not a number.
+  '047':
+    title: '047'
+    citation:
+    url: /media/research/047.pdf

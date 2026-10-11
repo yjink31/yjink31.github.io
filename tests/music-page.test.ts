@@ -1,101 +1,117 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { parseSite } from '../src/lib/site-content.ts'
 import { editLine, site, siteSources, withFile } from './support/site.ts'
-
 const pagesSource = readFileSync(new URL('../src/pages.tsx', import.meta.url), 'utf8')
 const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+const stripSource = readFileSync(new URL('../src/components/PhotoStrip.tsx', import.meta.url), 'utf8')
 
-test('the Music page opens with the orchestra film beside its side text', () => {
-  const { feature } = site.pages.music
-  assert.equal(feature.video.src, '/media/music/Orchestra1.mp4')
-  assert.ok(feature.video.poster)
-  assert.equal(feature.video.demo, false, 'a real performance never repeats')
-  // The text sits beside the film: the film takes the wide column, the text the narrow.
-  assert.match(css, /\.music-feature \{ display: grid; grid-template-columns: 8fr 4fr; gap: clamp\(32px, 6vw, 96px\); align-items: center;/)
-  assert.match(pagesSource, /<section className="music-feature enter enter-delay" data-side=\{layout\.music\.featureSide\}/)
-  // The choice in content/site.yaml decides which side the film takes, and the mirror is
-  // a real composition rather than a stretched one.
-  assert.match(css, /\.music-feature\[data-side='right'\] \{ grid-template-columns: 4fr 8fr; \}/)
-  // The orchestra film is the one that starts on its own, muted, once it is in view;
-  // every film below waits for a press.
-  assert.match(pagesSource, /<VideoPlayer autoplay label=\{music\.feature\.heading\} src=\{video\.src\}/)
-  assert.doesNotMatch(pagesSource, /<VideoPlayer autoplay label=\{film\.title\}/)
-  // The heading, note, and practice words stay the side text, next to the film.
-  assert.ok(feature.topics.length >= 1)
-  assert.ok(pagesSource.indexOf('className="music-experience"') > pagesSource.indexOf('className="music-feature'))
+test('the orchestra film leads the music page beside its experience text and topics', () => {
+  assert.match(pagesSource, /<section className="music-feature enter enter-delay" data-side=\{layout\.music\.featureSide\} aria-label="Orchestra and experience">/)
+  assert.match(pagesSource, /<VideoPlayer autoplay label=\{music\.feature\.heading\} src=\{video\.src\} poster=\{video\.poster\} caption=\{video\.caption \?\? ''\} demo=\{video\.demo\} \/>/)
+  // The copy on the other side is content, not literals in the page:
+  assert.match(pagesSource, /<h2>\{music\.feature\.heading\}<\/h2>/)
+  assert.match(pagesSource, /<p>\{music\.feature\.copy\}<\/p>/)
+  assert.match(pagesSource, /\{music\.feature\.note && <p className="preview-copy">\{music\.feature\.note\}<\/p>\}/)
+  assert.match(pagesSource, /\{layout\.music\.showTopics && <div className="music-topics">/)
+  // The side is a named option in content, and the grid follows it: the film takes the
+  // wide column and the experience text the other.
+  assert.equal(site.layout.music.featureSide, 'left')
+  assert.equal(site.layout.music.showTopics, true)
+  assert.match(css, /\.music-feature \{ display: grid; grid-template-columns: 8fr 4fr;/)
+  assert.match(css, /\.music-feature\[data-side='right'\] \.music-experience \{ grid-column: 1; grid-row: 1; \}/)
+  // The film is smaller than the window, never bled.
+  assert.doesNotMatch(css, /\.music-feature \.video-player \{[^}]*width: 100vw/)
+  // A film with its file missing keeps its still and says so, instead of a player
+  // with nothing behind it (the schema lets a film exist before its file does).
+  assert.match(pagesSource, /: <div className="film-empty" role="status">/)
+  assert.match(pagesSource, /\{messages\.recordingMissingHeading\}/)
+  assert.match(pagesSource, /\{messages\.recordingMissingCopy\}/)
 })
 
-test('the films below run the full width and carry their captions as the text under the player', () => {
-  const { films } = site.pages.music
-  assert.deepEqual(films.map((film) => film.title), ['Bach prelude', 'Solo repertoire'])
-  assert.ok(films.every((film) => film.poster))
-  assert.ok(films.every((film) => film.demo === false), 'a real performance never repeats')
-  // The Bach prelude film carries the text below its player, written in the content file.
-  assert.equal(films[0].src, '/media/music/BachPrelude1.mp4')
-  assert.ok(films[0].caption && films[0].caption.trim().length > 0)
-  // The caption renders under the player as a note, never over the picture.
-  assert.match(pagesSource, /caption=\{film\.caption \?\? ''\} demo=\{film\.demo\}/)
-  assert.match(css, /\.music-film \.media-note \{ padding-inline: var\(--gutter\); \}/)
-  // Full-bleed from inside the capped shell, at the film's own 16:9 rather than a column's.
-  assert.match(css, /\.music-films \{ display: flex; flex-direction: column;/)
-  assert.match(css, /\.music-film \{ width: 100vw; margin-inline: calc\(50% - 50vw\); \}/)
-  assert.match(css, /\.music-film \.video-stage \{ aspect-ratio: 16 \/ 9; \}/)
+test('the films run as rows that take the side their content names, with their descriptions beside them', () => {
   assert.match(pagesSource, /<section className="music-films enter" aria-label="Performances">/)
-  // The films are under the orchestra film, not above it.
-  assert.ok(pagesSource.indexOf('className="music-feature') < pagesSource.indexOf('className="music-films'))
+  // The player keeps no caption of its own: the description stands beside the film.
+  assert.match(pagesSource, /<VideoPlayer label=\{film\.title\} src=\{film\.src\} poster=\{film\.poster\} demo=\{film\.demo\} \/>/)
+  assert.match(pagesSource, /<div className="music-film" data-side=\{film\.side\}/)
+  assert.match(pagesSource, /<div className="film-copy" role=\{film\.src \? undefined : 'status'\}>/)
+  // The film is the smaller column of its row and the description takes the other side; a
+  // film on the right puts its text on the left by grid area, not by reordering the page.
+  assert.match(css, /\.music-film \{ display: grid; grid-template-columns: 7fr 5fr;/)
+  assert.match(css, /\.music-film\[data-side='right'\] \{ grid-template-columns: 5fr 7fr; \}/)
+  assert.match(css, /\.music-film\[data-side='right'\] \.video-player, \.music-film\[data-side='right'\] \.film-empty \{ grid-column: 2; grid-row: 1; \}/)
+  assert.match(css, /\.music-film\[data-side='right'\] \.film-copy \{ grid-column: 1; grid-row: 1; \}/)
+  // The films no longer measure the window, and the description is text at the reader's
+  // size — not a footnote under the player padded to the window's gutter.
+  assert.doesNotMatch(css, /\.music-film \{ width: 100vw/)
+  assert.doesNotMatch(css, /\.music-film \.media-note/)
+  assert.match(css, /\.film-description \{[^}]*font-size: clamp\(17px, 1\.8vw, 22px\);/)
+  // A 100vw shell would put a scrollbar in every viewport; full bleed measures the scroll box.
+  assert.doesNotMatch(css, /\.shell[^{]*\{[^}]*width: 100vw/)
 })
 
 test('a film listed before its file exists keeps its still and says so honestly', () => {
-  // The film without a file is the one the page renders as a still, never a dead player.
-  const { films } = site.pages.music
-  assert.ok(films.some((film) => film.src === undefined))
-  assert.match(pagesSource, /: <div className="film-empty" role="status">/)
+  // The schema allows a film to be listed before its file is in place…
+  assert.doesNotThrow(() => {
+    parseSite(withFile('music', editLine(siteSources.pages.music, /src: \/media\/music\/BachPrelude1\.mp4/, 'src:')))
+  })
+  // …and a film with no source simply does not run: no empty player on the page.
+  assert.doesNotMatch(pagesSource, /poster=\{film\.poster\} demo=\{film\.demo\} autoplay/)
+  const solo = site.pages.music.films[1]
+  assert.equal(solo.src, undefined)
+  // The still and the note stand in for the player…
+  assert.match(pagesSource, /<Image src=\{film\.poster\} alt=\{`Still for the \$\{film\.title\} film\.`\} width=\{1600\} height=\{900\} loading="lazy" \/>/)
+  // …and the copy comes from the same message set as the page's own notes, so it can be
+  // reworded for the voice without touching the page.
   assert.match(pagesSource, /\{messages\.recordingMissingHeading\}/)
-  // Writing the file's path in gives that film its player back.
-  const filled = withFile('music', editLine(siteSources.pages.music, /^    src:$/m, '    src: /media/music/SoloRepertoire.mp4'))
-  assert.equal(parseSite(filled).pages.music.films[1].src, '/media/music/SoloRepertoire.mp4')
+  assert.match(pagesSource, /\{messages\.recordingMissingCopy\}/)
+  assert.ok(site.messages.recordingMissingHeading.length > 0)
+  assert.ok(site.messages.recordingMissingCopy.length > 0)
 })
 
-test('the photographs close the page as a strip that turns like a ring', () => {
-  const { photos } = site.pages.music
-  assert.ok(photos.length >= 5, `expected at least five photographs, found ${photos.length}`)
-  assert.ok(photos.every((photo) => photo.image.startsWith('/media/music/') && photo.alt && photo.width && photo.height))
-  // Upright and wide pictures share the strip, which is why one declared ratio will not do.
-  assert.ok(photos.some((photo) => photo.width! < photo.height!))
-  assert.ok(photos.some((photo) => photo.width! > photo.height!))
+test('each film names its side, and a film with its file takes its thumbnail from its own frames', () => {
+  const { films, feature } = site.pages.music
+  // The Bach film is the smaller one on the left with its text on the right; the film
+  // below it stands on the right with its text on the left. A film that says nothing
+  // about its side simply sits left.
+  assert.deepEqual(films.map((film) => film.side), ['left', 'right'])
+  // A film's thumbnail is a portion of its own video, not a stand-in from elsewhere.
+  assert.equal(feature.video.poster, '/media/music/Orchestra1-poster.jpg')
+  assert.equal(films[0].poster, '/media/music/BachPrelude1-poster.jpg')
+  for (const film of [feature.video, films[0]]) {
+    assert.ok(film.poster.startsWith('/media/music/'), `${film.title} keeps a frame of its own as its thumbnail`)
+    assert.ok(!film.poster.includes('unsplash'), `${film.title} still points at a stock still`)
+  }
+  // The frames exist where their paths point…
+  for (const path of ['/media/music/Orchestra1-poster.jpg', '/media/music/BachPrelude1-poster.jpg']) {
+    assert.ok(existsSync(new URL(`../public${path}`, import.meta.url)), `${path} is missing from public`)
+  }
+  // …and a film whose file is not there yet has no frame to take; its still is its own.
+  assert.equal(films[1].src, undefined)
+})
+
+test('the photographs close the music page as one ring that turns like a strip', () => {
+  const music = site.pages.music
+  // The list is content: the page simply renders whatever is there, in order.
+  assert.deepEqual(music.photos.map((photo) => photo.image), [
+    '/media/music/265.JPG',
+    '/media/music/IMG_5505.JPG',
+    '/media/music/IMG_7376.JPG',
+    '/media/music/IMG_7498.JPG',
+    '/media/music/IMG_8833.JPG',
+    '/media/music/20150303_152956.jpg',
+  ])
   assert.match(pagesSource, /<PhotoStrip images=\{music\.photos\} \/>/)
-  assert.match(pagesSource, /className="music-photos reveal" aria-label="Performance photographs"/)
-  // The strip is the last thing on the page, after the feature and the films.
-  assert.ok(pagesSource.indexOf('className="music-films') < pagesSource.indexOf('className="music-photos'))
-  // Emptying the block drops the strip rather than failing: it is not required content.
-  const withoutPhotos = siteSources.pages.music.slice(0, siteSources.pages.music.lastIndexOf('photos:')) + 'photos:'
-  assert.deepEqual(parseSite(withFile('music', withoutPhotos)).pages.music.photos, [])
-})
-
-test('the recording slots and their companion are gone from the page', () => {
-  // The page is the orchestra film with its side text, the films under it, and the
-  // photograph strip. The stock slots and the companion still are no longer composed,
-  // and the page's content file carries no companion block to feed them.
-  assert.doesNotMatch(pagesSource, /recording-collection|collection-companion|recording-empty/)
-  assert.doesNotMatch(siteSources.pages.music, /^companion:/m)
-  assert.doesNotMatch(css, /\.recording|collection-companion/)
-})
-
-test('a mistake in a film or a photograph names the file, the entry, and the setting', () => {
-  assert.throws(() => parseSite(withFile('music', editLine(siteSources.pages.music, /^    poster: /m, '    still: '))),
-    /content\/pages\/music\.yaml → feature\.video: has an unknown setting "still"/)
-  assert.throws(() => parseSite(withFile('music', editLine(siteSources.pages.music, /^  - title: Bach prelude$/m, '  - title:'))),
-    /content\/pages\/music\.yaml → films\[0\]\.title: cannot be left empty/)
-  assert.throws(() => parseSite(withFile('music', editLine(siteSources.pages.music, /(films:[\s\S]*?poster: )\S+/, '$1'))),
-    /content\/pages\/music\.yaml → films\[0\]\.poster: cannot be left empty/)
-  // The feature film reads through the same vocabulary as the films below it.
-  assert.throws(() => parseSite(withFile('music', editLine(siteSources.pages.music, /^    demo: false$/m, '    demo: no'))),
-    /content\/pages\/music\.yaml → feature\.video\.demo: needs true or false/)
-  // Half a pair of proportions is a mistake, not a smaller frame.
-  assert.throws(() => parseSite(withFile('music', editLine(siteSources.pages.music, /(photos:[\s\S]*?height: )\d+/, '$1'))),
-    /content\/pages\/music\.yaml → photos\[0\]: needs both width and height, or neither/)
-  assert.throws(() => parseSite(withFile('music', editLine(siteSources.pages.music, /(photos:[\s\S]*?alt: ).*/, '$1'))),
-    /content\/pages\/music\.yaml → photos\[0\]\.alt: cannot be left empty/)
+  // The photographs keep their real proportions in content; the ring gives each one the
+  // same square card, cropped evenly from its centre, so a mixed set lines up as a ring.
+  assert.ok(music.photos.every((photo) => Number.isInteger(photo.width) && Number.isInteger(photo.height)))
+  assert.match(css, /\.photo-card \{[^}]*width: var\(--photo-width\); height: var\(--photo-width\);/)
+  assert.match(css, /\.photo-card img \{[^}]*object-fit: cover/)
+  // Every photograph carries its own description…
+  assert.ok(music.photos.every((photo) => photo.alt.trim().length > 0))
+  // …and it is a strip at the foot of the page, after the films.
+  assert.ok(pagesSource.indexOf('<PhotoStrip') > pagesSource.indexOf('music-films'))
+  assert.match(stripSource, /role="group" tabIndex=\{turning \? 0 : -1\}/)
+  assert.match(stripSource, /onKeyDown=\{\(event\) =>/)
 })

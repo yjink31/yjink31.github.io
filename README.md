@@ -65,8 +65,12 @@ layout:
   collection and the research-paper panels. The Music page no longer composes the
   recording slots — it is the orchestra film with its side text, the films under it, and
   the photograph strip — but the collection still parses, ready for a surface to use
-  again. `papers.*.url` points at placeholder PDFs for now; leave `src`, `url`, and
-  `citation` empty and the panels say so honestly instead.
+  again. `papers.*.url` points at the supplied PDFs in `public/media/research/`; leave  `src`, `url`, and `citation` empty and the panels say so honestly instead. A paper with
+  a `url` also draws its own pages in its panel, stacked and scrollable like the resume.
+  A section may stand a second document with its paper: `project.side_paper` in
+  [content/pages/research.yaml](content/pages/research.yaml) names a key here, and the
+  panel sits under the section's text, filling the space beside the paper (the 047
+  document ships this way).
 - `messages`: sentences shown while something has not been supplied yet.
 
 Put approved files in `public/media` and refer to them as `/media/portrait.webp`. The
@@ -98,7 +102,10 @@ file alone — the surrounding CSS decides the slot it fills. The control is a t
 button over the frame, so nothing is drawn over the image and the cursor hint and focus
 ring carry the affordance. Up to two of the next cards peek out behind the frame, edge
 only, so the deck reads as a stack there is more to leaf through. The Research page ships
-two demos: the project image and each smaller project. The Music page's photographs are
+five decks: the main project set, the deck beside the paper, the GHP row's photographs,
+and the two smaller projects. Each picture declares its own proportions, so a mixed set of
+upright and wide photographs is shown whole rather than cropped to one shape. The
+Music page's photographs are
 no longer a deck: they close the page as a strip that turns like a ring.
 
 ### The Music page
@@ -106,24 +113,29 @@ no longer a deck: they close the page as a strip that turns like a ring.
 The page opens with the orchestra film beside its side text: `feature:` in
 [content/pages/music.yaml](content/pages/music.yaml) holds the film (`feature.video:`)
 and the heading, note, and practice words alongside it, and `layout.music.feature_side`
-chooses which side the film takes. Below it, `films:` is a list and each entry runs the
-full width of the window, one after another, played in place by the same
-[VideoPlayer](src/components/VideoPlayer.tsx). The site never hands a video file to the
+chooses which side the film takes. Below it, `films:` is a list and each entry is a row of
+its own, played in place by the same [VideoPlayer](src/components/VideoPlayer.tsx): `side:`
+picks the side of the row the film takes and its description text stands on the other side,
+the film the smaller of the two. The site never hands a video file to the
 browser to open or download. The orchestra film starts on its own, muted, once it is in
 view; the films below wait for a press. A film whose `src` is still empty keeps its
 `poster` and says so, instead of showing a player with nothing behind it, so a film can
 be listed before its file exists — put the file in `public/media/music` and write
 `/media/music/<file>` as its `src` (the solo repertoire film is waiting for exactly
-that). Each film's `caption` is the text shown under its player.
+that). Each film's `caption` is the description shown beside its player, and a film's
+`poster` is a frame taken from its own video, so the thumbnail is always a portion of
+the film it plays.
 
 The photographs close the page as a strip that turns like a ring:
 [PhotoStrip](src/components/PhotoStrip.tsx) places every picture on one circle in three
 dimensions, and the **Previous photo** / **Next photo** arrows turn the circle one place
 at a time, wrapping at both ends so the strip never runs out in either direction; the
 arrow keys do the same. `photos:` takes the same `image`/`alt` entries as any other
-picture list, plus each picture's real `width`/`height`, so a mixed set of upright and
-wide photographs is shown whole rather than cropped to one shape. Leave the block out,
-or empty it, and the page simply ends after the films.
+picture list, plus each picture's real `width`/`height`. Every photograph fills a square
+card, cropped evenly from its centre, so a mixed set of upright and wide shots still lines
+up as one ring — and the circle's radius stays beyond twice the card's width at every
+viewport, so no photograph ever touches its neighbour. Leave the block out, or empty it, and the page simply ends after
+the films.
 
 ### The resume
 
@@ -209,7 +221,7 @@ phone.
 
 The files are validated as they load. A missing field, a value outside its allowed set, a
 misspelled setting, a repeated slug, a colour that is not a colour, a featured work or
-paper that does not exist, and a GHP pair that is not exactly two images each fail with the
+paper that does not exist each name the
 exact file and setting, for example
 `content/site.yaml → layout.detail.copy_side: must be one of: left, right (found "centre")`
 and

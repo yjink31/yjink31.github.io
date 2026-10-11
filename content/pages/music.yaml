@@ -31,8 +31,8 @@ feature:
   # The film beside the text above. It starts on its own, muted, once it is in view.
   video:
     src: /media/music/Orchestra1.mp4
-    # The still shown before playback starts.
-    poster: https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=1600&q=85
+    # The still shown before playback starts: a frame taken from the film itself.
+    poster: /media/music/Orchestra1-poster.jpg
     # An optional line under the player. Leave it empty to hide it.
     caption:
     # true while this is demo footage rather than a performance; it repeats.
@@ -44,20 +44,24 @@ feature:
     - Performance
 
 # -----------------------------------------------------------------------------
-# The films under the orchestra film, in order, each one the full width of the
-# window and played right here on the page. They wait for a press, and each
-# film's caption is the text shown below its player.
+# The films under the orchestra film, in order, played right here on the page.
+# They wait for a press. side: chooses the side of the row the film takes (left
+# or right), and its description text stands on the other side. Each film's
+# poster is a frame taken from its own video.
 # -----------------------------------------------------------------------------
 films:
   - title: Bach prelude
+    # left or right: the side of the row the film takes.
+    side: left
     src: /media/music/BachPrelude1.mp4
     # The still shown before playback starts.
-    poster: https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1600&q=85
-    # The text below the player. Leave it empty to hide it.
+    poster: /media/music/BachPrelude1-poster.jpg
+    # The description beside the player. Leave it empty to hide it.
     caption: J.S. Bach, Prelude.
     # true while this is demo footage rather than a performance; it repeats.
     demo: false
   - title: Solo repertoire
+    side: right
     src:
     poster: https://images.unsplash.com/photo-1460036521480-ff49c08c2781?auto=format&fit=crop&w=1600&q=85
     caption:

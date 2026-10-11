@@ -1,67 +1,191 @@
 # =============================================================================
 # The Research page: the three required sections, in order.
 #
-# The paper panels each section points at live in content/site.yaml.
+# The paper panels each section points at live in content/media/papers.yaml, and
+# each panel draws its paper's own pages, stacked and scrollable, like the resume.
 #
 # IMAGE DECKS
-# A block that shows one picture uses `image:` plus `alt:` (see the GHP section).
+# A block that shows one picture uses `image:` plus `alt:`.
 # A block that should let the reader cycle through several pictures uses `images:`
 # instead, a list of `image:`/`alt:` entries. Pressing the picture advances to the
 # next one and wraps around, and hovering it shows a cursor hint. A list with a
 # single entry is simply a single picture. Use one form or the other, never both.
+# A picture that declares `width:` and `height:` is shown whole, so a set of
+# upright and wide photographs should carry the pair rather than be cut to one
+# shape.
 # =============================================================================
 
 heading: Research
-introduction: Material science, Energy, Engineering 
+introduction: Material science, Energy, Design 
 project:
-  # A deck of three images: press the picture to cycle through them.
+  # The main slide deck: press the picture to cycle through the set.
   images:
-    - image: https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1600&q=85
-      alt: Stock laboratory photograph used as a research project reference.
-    - image: https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1600&q=85
-      alt: Stock image of a microscope in a laboratory.
-    - image: https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1600&q=85
-      alt: Stock photograph of notes on an open desk.
-  heading: An inquiry in progress.
-  copy: A space for Yujin’s projects, their questions, and what the work revealed.
+    - image: /media/research/mainR/IMG_2155.jpg
+      alt: Photograph from the main research set (IMG_2155).
+      width: 3456
+      height: 2591
+    - image: /media/research/mainR/IMG_2201.jpg
+      alt: Photograph from the main research set (IMG_2201).
+      width: 4032
+      height: 3024
+    - image: /media/research/mainR/IMG_2354.jpg
+      alt: Photograph from the main research set (IMG_2354).
+      width: 3610
+      height: 2708
+    - image: /media/research/mainR/Screenshot 2026-10-11 165724.png
+      alt: Screenshot from the main research set (2026-10-11 165724).
+      width: 480
+      height: 417
+    - image: /media/research/mainR/Screenshot 2026-10-11 165742.png
+      alt: Screenshot from the main research set (2026-10-11 165742).
+      width: 619
+      height: 528
+  heading: Response of STF Influenced Lattice Structures Under Complex Loading
+  copy: Researched the application of Shear Thickening Fluid (STF) to 3D-printed Thermoplastic Polyurethane (TPU) lattice structures to evaluate their mechanical performance and energy absorption. Collected shear and compression data on the Universal Testing Machine to analyze the greatest resistance to deformation ratio
   # An optional line about this section. Leave it empty to hide it.
-  note: Project images, descriptions, and research findings are awaiting approved content.
+  note: Georgia Science and Engineering Fair (GSEF) Finalist; 2nd place in material science
+  # A deck shown with the paper panel: under this text and beside the paper.
+  preview:
+    images:
+      - image: /media/research/Research1/IMG_5523.png
+        alt: Research photograph (IMG_5523).
+        width: 4032
+        height: 3024
+      - image: /media/research/Research1/IMG_5657.png
+        alt: Research photograph (IMG_5657).
+        width: 3024
+        height: 4032
+      - image: /media/research/Research1/IMG_5661.png
+        alt: Research photograph (IMG_5661).
+        width: 3024
+        height: 4032
+      - image: /media/research/Research1/IMG_6747.png
+        alt: Research photograph (IMG_6747).
+        width: 3672
+        height: 4896
+      - image: /media/research/Research1/IMG_8983.png
+        alt: Research photograph (IMG_8983).
+        width: 3024
+        height: 4032
   # Which paper panel appears alongside this section. Matches a key in papers.
   paper: project
+  # An optional second document panel, shown under this section's text and filling
+  # the space beside the paper. Matches a key in papers. (The key is quoted so it
+  # stays the name "047", not a number.)
+  side_paper: '047'
 ghp:
   # The section title required by the brief. Keep it exactly as it is.
-  title: GHP
-  heading: Observations into ideas.
-  copy: GHP images, experiences, and the paper written there will appear here.
+  title: Governor's Honors Program (GHP)
+  heading: GHP63 Tunnel
+  copy: Proposed a tunnel design with quality control measures aligned with Codes of Records for seismic and shear strain calculation. Created Piping and Instrumentation (P&ID) diagrams and created molds for concrete pour using woodworking tools
   # An optional line about this section. Leave it empty to hide it.
   note:
-  # Two images: the first is the wider one, the second the taller one.
+  # The photo deck on the left, where the one photograph stood: press the picture
+  # to cycle through the set. The first entry is the picture the row opens on.
   images:
-    - image: https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=900&q=85
-      alt: Stock image of a microscope in a laboratory.
-    - image: https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=85
-      alt: Stock photograph of notes on an open desk.
+    - image: /media/research/GHPphoto/Screenshot 2026-10-11 152029.png
+      alt: GHP screenshot (2026-10-11 152029).
+      width: 1324
+      height: 958
+    - image: /media/research/GHPphoto/IMG_1607.jpg
+      alt: GHP photograph (IMG_1607).
+      width: 3024
+      height: 4032
+    - image: /media/research/GHPphoto/IMG_2835.png
+      alt: GHP photograph (IMG_2835).
+      width: 5712
+      height: 4284
+    - image: /media/research/GHPphoto/IMG_2869.png
+      alt: GHP photograph (IMG_2869).
+      width: 4896
+      height: 3672
+    - image: /media/research/GHPphoto/Screenshot 2026-10-11 174331.png
+      alt: GHP screenshot (2026-10-11 174331).
+      width: 510
+      height: 457
+    - image: /media/research/GHPphoto/Screenshot 2026-10-11 174417.png
+      alt: GHP screenshot (2026-10-11 174417).
+      width: 493
+      height: 465
+    - image: /media/research/GHPphoto/Screenshot 2026-10-11 174437.png
+      alt: GHP screenshot (2026-10-11 174437).
+      width: 508
+      height: 460
+    - image: /media/research/GHPphoto/Screenshot 2026-10-11 174452.png
+      alt: GHP screenshot (2026-10-11 174452).
+      width: 507
+      height: 427
+  # The videos on the right, one above the other. title names the player.
+  videos:
+    - title: GHP video 1
+      src: /media/research/IMG_1613.MOV
+    - title: GHP video 2
+      src: /media/research/IMG_1634.mp4
   # Which paper panel belongs to this section. Matches a key in papers.
   paper: ghp
 smaller:
-  title: Smaller projects
+  title: Personal Projects
   projects:
-    - title: Project notes
-      copy: A place for a project’s question, process, and outcome.
-      # A deck of two images: press the picture to cycle through them.
+    - title: Carbon Neutral Building
+      copy: To find the optimal school location for solar panels, I designed a stable prototype that eliminated manual human errors and allowed us to collect accurate voltage and current data. Using this data, I identified the area with maximum sunlight and designed the physical building on AutoCAD, applying precise dimensioning skills. Finally, I modeled the infrastructure on Onshape, intentionally optimizing natural light with large windows for the plant research lab while shading the aquaponics lab to prevent algae growth.
+      # The CarbonN figures, in order. Press the picture to cycle through them.
       images:
-        - image: https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1000&q=85
-          alt: Reference photograph of a notebook for a smaller project.
-        - image: https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1000&q=85
-          alt: Reference laboratory photograph paired with the notebook.
+        - image: /media/research/CarbonN/CN1.png
+          alt: CarbonN project figure (CN1).
+          width: 1173
+          height: 654
+        - image: /media/research/CarbonN/CN2.png
+          alt: CarbonN project figure (CN2).
+          width: 1167
+          height: 658
+        - image: /media/research/CarbonN/CN3.png
+          alt: CarbonN project figure (CN3).
+          width: 1170
+          height: 661
+        - image: /media/research/CarbonN/CN4.png
+          alt: CarbonN project figure (CN4).
+          width: 1171
+          height: 661
+        - image: /media/research/CarbonN/CN5.png
+          alt: CarbonN project figure (CN5).
+          width: 1170
+          height: 667
+        - image: /media/research/CarbonN/CN6.png
+          alt: CarbonN project figure (CN6).
+          width: 1167
+          height: 658
+        - image: /media/research/CarbonN/CN7.png
+          alt: CarbonN project figure (CN7).
+          width: 1168
+          height: 658
+        - image: /media/research/CarbonN/CN8.png
+          alt: CarbonN project figure (CN8).
+          width: 1171
+          height: 658
       # The small line under the description.
-      credit: Preview slot. Project not supplied.
-    - title: An experiment
-      copy: Images and a short account of the work will live here.
-      # A deck of two images: press the picture to cycle through them.
+      credit: 2025
+    - title: Passion Projects
+      copy: These personal projects were developed after finding problems I face everyday.
+      # The passion-project figures, in order. Press the picture to cycle.
       images:
-        - image: https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85
-          alt: Reference laboratory photograph for a smaller experiment.
-        - image: https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1000&q=85
-          alt: Reference photograph of a researcher at a bench.
-      credit: Preview slot. Project not supplied.
+        - image: /media/research/PassionProject/KH.png
+          alt: Passion project figure (KH).
+          width: 1167
+          height: 663
+        - image: /media/research/PassionProject/KH2.png
+          alt: Passion project figure (KH2).
+          width: 1170
+          height: 661
+        - image: /media/research/PassionProject/AdaptR.png
+          alt: Passion project figure (AdaptR).
+          width: 1173
+          height: 660
+        - image: /media/research/PassionProject/AdaptR2.png
+          alt: Passion project figure (AdaptR2).
+          width: 1168
+          height: 660
+        - image: /media/research/PassionProject/ElecCar.png
+          alt: Passion project figure (ElecCar).
+          width: 1168
+          height: 655
+      credit: 2024-2026

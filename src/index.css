@@ -329,19 +329,21 @@ button:active, .button:active { transform: translateY(1px); }
 .source-note a { margin-top: 10px; }
 .artwork-detail { margin-bottom: 96px; }
 
-/* The films lead the page edge to edge: full-bleed from inside the capped shell, so the
-   picture measures the window rather than the shell. The stage keeps the film's own 16:9,
-   which is what the video is, so nothing is cropped to a column's ratio. */
-.music-films { display: flex; flex-direction: column; gap: clamp(28px, 6vh, 72px); margin-top: 40px; }
-.music-film { width: 100vw; margin-inline: calc(50% - 50vw); }
+/* Each film is one row of its own: the film on the side its content names, smaller than
+   the window, and its description text standing on the other side. The stage keeps the
+   film's own 16:9, which is what the video is, so nothing is cropped to a column's ratio. */
+.music-films { display: flex; flex-direction: column; gap: clamp(48px, 9vh, 120px); margin-top: 40px; }
+.music-film { display: grid; grid-template-columns: 7fr 5fr; gap: clamp(24px, 4vw, 64px); align-items: center; }
+.music-film[data-side='right'] { grid-template-columns: 5fr 7fr; }
+.music-film[data-side='right'] .video-player, .music-film[data-side='right'] .film-empty { grid-column: 2; grid-row: 1; }
+.music-film[data-side='right'] .film-copy { grid-column: 1; grid-row: 1; }
 .music-film .video-stage { aspect-ratio: 16 / 9; }
-.music-film .media-note { padding-inline: var(--gutter); }
+/* The description reads as text, not a footnote; the honest note stays small. */
+.film-description { color: var(--text); font-size: clamp(17px, 1.8vw, 22px); line-height: 1.5; letter-spacing: -0.3px; margin: 0; max-width: 30ch; }
+.film-copy p + p { margin-top: 12px; }
+.film-copy p:not(.film-description) { color: var(--secondary); font-size: 14px; margin: 0; }
 /* A film whose file is not there yet: the still stands in at the same width and ratio. */
 .film-empty { background: var(--surface-raised); }
-.film-empty p { padding: 12px 0 0; color: var(--secondary); font-size: 14px; }
-.film-empty p:last-of-type { padding-bottom: 16px; }
-/* Full-bleed films pad their note to the window's gutter; the side-by-side one does not. */
-.music-film .film-empty p { padding-inline: var(--gutter); }
 .video-stage { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface-raised); }
 .video-stage video { width: 100%; height: 100%; object-fit: cover; }
 /* The frame is the play/pause control: a transparent button over the picture, so hovering
@@ -378,14 +380,20 @@ button:active, .button:active { transform: translateY(1px); }
    place on one circle in three dimensions, the front facing the reader and the rest curving
    away; each press on an arrow rotates the circle one place and wraps at both ends, so the
    pictures travel the same circle in both directions forever. */
-.photo-strip { --photo-width: clamp(180px, 24vw, 280px); --photo-radius: clamp(250px, 30vw, 380px);
+/* Neighbours must never touch. One place on the circle is RING_TURN (30deg), and the
+   tightest pair is the two receding cards (30deg and 60deg from the front), where the
+   chord flattens to radius·(sin60 − sin30): the radius stays beyond 2.8× the picture
+   width at every viewport, so every visible pair clears with room to spare. */
+.photo-strip { --photo-width: clamp(135px, 15vw, 170px); --photo-radius: clamp(450px, 48vw, 580px);
   display: flex; align-items: center; gap: clamp(10px, 2vw, 28px); }
 .music-photos { max-width: 1100px; margin-block: clamp(64px, 12vh, 128px) 60px; }
-.photo-ring { position: relative; flex: 1; height: clamp(320px, 44vw, 480px); perspective: 1500px; overflow: hidden; }
-.photo-card { position: absolute; left: 50%; top: 50%; width: var(--photo-width);
+.photo-ring { position: relative; flex: 1; height: clamp(320px, 44vw, 480px); perspective: 4000px; overflow: hidden; }
+/* Every card is the same square, cropped evenly from the picture's centre, so a mixed
+   set of upright and wide photographs still lines up as one ring. */
+.photo-card { position: absolute; left: 50%; top: 50%; width: var(--photo-width); height: var(--photo-width);
   transform: translate(-50%, -50%) rotateY(var(--photo-angle, 0deg)) translateZ(var(--photo-radius));
   transition: transform 700ms var(--ease-out-expo); }
-.photo-card img { display: block; width: 100%; height: auto; background: var(--surface-raised); border: 1px solid var(--line); }
+.photo-card img { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--surface-raised); border: 1px solid var(--line); }
 /* The curve shades by place, and the seam where the ring wraps hides by place too: opacity
    and visibility switch at once with no transition, so a picture is never seen swinging
    across the ring as it passes between the two ends. */
@@ -396,26 +404,38 @@ button:active, .button:active { transform: translateY(1px); }
 
 .research-project { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px 24px; }
 .research-project > .image-deck { grid-column: 1 / 10; grid-row: 1; }
-.research-project > .image-deck > .image-frame { aspect-ratio: 16 / 9; }
-.research-project > .image-deck > .image-frame img { height: 100%; object-fit: cover; }
-.research-project-copy { grid-column: 1 / 7; grid-row: 2; padding-top: 10px; }
+/* A deck picture that declares its own proportions frames itself and is shown whole;
+   only a picture without a pair takes the frame the surface hands the deck. */
+/* The section's text and its second document take the whole space left of the deck and
+   the paper: the text on top, the document filling everything under it down to the
+   paper's foot, its own pages scrolling inside the frame. */
+.research-project-side { grid-column: 1 / 9; grid-row: 2; display: grid; grid-template-rows: auto 1fr; gap: 32px; }
+.research-project-side .research-project-copy { padding-top: 10px; }
+.research-project-side > .paper-widget { min-height: 0; display: flex; flex-direction: column; }
+/* A zero flex basis keeps the pages from dictating the height: the viewer fills the
+   space beside the paper and scrolls its pages inside it instead of stretching past. */
+.research-project-side > .paper-widget .resume-viewer { aspect-ratio: auto; flex: 1 1 0; min-height: 360px; }
 .research-project-copy h2 { font-size: 36px; letter-spacing: -1.6px; margin-bottom: 16px; }
 .research-project-copy > p { max-width: 46ch; }
 .preview-copy { color: var(--secondary); font-size: 14px; margin-top: 14px; }
-/* The paper panel sits in the second row, beside the copy, so it always reads below
-   the project image rather than beside its top edge. */
-.research-project > .paper-widget { grid-column: 9 / 13; grid-row: 2; align-self: start; }
+/* The paper slot sits in the second row, beside the copy: its preview picture over the
+   paper panel, so the panel always reads below the project image rather than beside
+   its top edge. */
+.research-project > .research-paper-slot { grid-column: 9 / 13; grid-row: 2; align-self: start; display: grid; gap: 24px; align-content: start; }
 .paper-widget { background: var(--surface-raised); padding: 28px; border-top: 2px solid var(--text); }
 .paper-label { font-size: 14px; color: var(--secondary); }
 .paper-widget h3 { font-size: 25px; line-height: 1.2; letter-spacing: -0.8px; margin-top: 32px; }
 .paper-widget > p { font-size: 14px; margin-top: 16px; color: var(--secondary); }
+.paper-widget > .resume-viewer { margin-top: 24px; }
 .paper-open { margin-top: 28px; }
 .paper-unavailable { display: flex; align-items: center; justify-content: space-between; margin-top: 36px; font-size: 14px; color: var(--secondary); }
 .ghp-section { margin-top: 140px; }
 .ghp-section > h2, .smaller-projects > h2 { font-size: 56px; letter-spacing: -3px; margin-bottom: 42px; }
 .ghp-images { display: grid; grid-template-columns: 7fr 1fr 4fr; gap: 24px; align-items: end; }
-.ghp-images > .image-frame:first-child { grid-column: 1; aspect-ratio: 5 / 4; }
-.ghp-images > .image-frame:last-child { grid-column: 3; aspect-ratio: 4 / 5; }
+.ghp-images > .image-deck:first-child { grid-column: 1; }
+.ghp-images > .image-deck .image-frame { aspect-ratio: 5 / 4; }
+.ghp-videos { grid-column: 3; display: flex; flex-direction: column; gap: 24px; }
+.ghp-videos .video-stage { aspect-ratio: 16 / 9; }
 .ghp-images img { width: 100%; height: 100%; object-fit: cover; }
 .ghp-copy { display: grid; grid-template-columns: 7fr 1fr 4fr; gap: 24px; margin-top: 40px; }
 .ghp-copy > div:first-child { grid-column: 1; max-width: 44ch; }
@@ -424,8 +444,7 @@ button:active, .button:active { transform: translateY(1px); }
 .smaller-projects { margin-block: 130px 100px; }
 .small-project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; }
 .small-project-grid article:last-child { padding-top: 80px; }
-.small-project-grid .image-frame { aspect-ratio: 4 / 3; }
-.small-project-grid img { height: 100%; object-fit: cover; }
+/* The cards frame each figure at its own proportions too, so nothing is cropped. */
 .small-project-grid h3 { font-size: 26px; letter-spacing: -1px; margin-top: 24px; }
 .small-project-grid p { margin-top: 10px; max-width: 38ch; font-size: 15px; }
 .small-project-grid .work-credit { display: block; margin-top: 14px; }
@@ -508,7 +527,8 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
   .art-collection { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
   .music-feature { grid-template-columns: 7fr 5fr; gap: 32px; }
   .artwork-detail { gap: 32px; }
-  .research-project > .paper-widget { grid-column: 8 / 13; }
+  .research-project > .research-paper-slot { grid-column: 8 / 13; }
+  .research-project-side { grid-column: 1 / 8; }
 }
 
 @media (max-width: 767px) {
@@ -539,24 +559,24 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
   .detail-copy dl { margin-block: 26px; }
   .artwork-detail { margin-bottom: 56px; }
   .music-feature { grid-template-columns: 1fr; gap: 32px; }
+  .music-film, .music-film[data-side='right'] { grid-template-columns: 1fr; gap: 18px; }
+  .music-film[data-side='right'] .video-player, .music-film[data-side='right'] .film-empty, .music-film[data-side='right'] .film-copy { grid-column: 1; grid-row: auto; }
   .video-stage { aspect-ratio: 4 / 3; }
   .music-experience h2 { font-size: 40px; margin-bottom: 18px; }
   .music-experience > p { max-width: 42ch; }
   .music-topics { margin-top: 24px; }
-  .photo-strip { --photo-width: 150px; --photo-radius: 180px; gap: 8px; }
+  .photo-strip { --photo-width: 112px; --photo-radius: 380px; gap: 8px; }
   .photo-ring { height: clamp(260px, 80vw, 360px); }
   .strip-arrow { width: 44px; height: 44px; }
   .research-project { grid-template-columns: 1fr; gap: 24px; }
-  .research-project > .image-deck, .research-project-copy, .research-project > .paper-widget { grid-column: 1; grid-row: auto; }
-  .research-project > .image-deck > .image-frame { aspect-ratio: 4 / 3; }
+  .research-project > .image-deck, .research-project-side, .research-project > .research-paper-slot { grid-column: 1; grid-row: auto; }
   .research-project-copy h2 { font-size: 30px; }
   .research-project-copy { padding: 0; }
   .paper-widget { padding: 24px; }
   .ghp-section { margin-top: 72px; }
   .ghp-section > h2, .smaller-projects > h2 { font-size: 40px; letter-spacing: -2px; margin-bottom: 28px; }
   .ghp-images, .ghp-copy { grid-template-columns: 1fr; gap: 24px; }
-  .ghp-images > .image-frame:first-child, .ghp-images > .image-frame:last-child, .ghp-copy > div:first-child, .ghp-copy .paper-widget { grid-column: 1; }
-  .ghp-images > .image-frame:last-child { aspect-ratio: 4 / 3; }
+  .ghp-images > .image-deck:first-child, .ghp-videos, .ghp-copy > div:first-child, .ghp-copy .paper-widget { grid-column: 1; }
   .ghp-copy { margin-top: 28px; }
   .smaller-projects { margin-block: 64px 56px; }
   .small-project-grid { grid-template-columns: 1fr; gap: 36px; }
