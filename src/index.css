@@ -402,7 +402,9 @@ button:active, .button:active { transform: translateY(1px); }
 .photo-card[aria-hidden='true'] { opacity: 0; visibility: hidden; }
 .strip-arrow { flex: none; width: 48px; height: 48px; padding: 0; justify-content: center; gap: 0; }
 
-.research-project { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px 24px; }
+/* The row gap is the breath between the main slide deck and the project text below
+   it: the whole second row sits at one distance, so the columns stay in line. */
+.research-project { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 56px 24px; }
 .research-project > .image-deck { grid-column: 1 / 10; grid-row: 1; }
 /* A deck picture that declares its own proportions frames itself and is shown whole;
    only a picture without a pair takes the frame the surface hands the deck. */

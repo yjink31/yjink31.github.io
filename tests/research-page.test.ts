@@ -42,6 +42,9 @@ test('the 047 document fills the space beside the research paper, under the sect
   // the preview deck and the paper panel…
   assert.match(pagesSource, /<div className="research-project-side">/)
   assert.ok(pagesSource.indexOf('className="research-project-copy"') < pagesSource.indexOf('research.project.sidePaper'), 'the text stands above the document')
+  // The project text breathes below the main slide deck: the whole second row sits
+  // 56px under it, one distance, so the columns stay in line.
+  assert.match(css, /\.research-project \{[^}]*gap: 56px 24px; \}/)
   assert.match(css, /\.research-project-side \{ grid-column: 1 \/ 9; grid-row: 2; display: grid; grid-template-rows: auto 1fr;/)
   // …and the document fills the whole space under the text, its pages scrolling inside.
   assert.match(css, /\.research-project-side > \.paper-widget \.resume-viewer \{ aspect-ratio: auto; flex: 1 1 0;/)
