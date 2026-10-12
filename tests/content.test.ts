@@ -37,8 +37,8 @@ test('missing artwork image configuration fails clearly rather than requesting u
 test('navigation keeps three destinations, with Art on the front page', () => {
   // The front page is the Art collection, so Art leads the navigation at '/', and Me is
   // no longer a destination: its hero opens the front page above the collection.
-  assert.deepEqual(navigation.map((item) => item.label), ['Art', 'Music', 'Research'])
-  assert.deepEqual(navigation.map((item) => item.href), ['/', '/music', '/research'])
+  assert.deepEqual(navigation.map((item) => item.label), ['Art', 'Research', 'Music'])
+  assert.deepEqual(navigation.map((item) => item.href), ['/', '/research', '/music'])
   assert.equal(new Set(navigation.map((item) => item.href)).size, 3)
 })
 

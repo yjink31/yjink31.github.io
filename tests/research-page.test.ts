@@ -35,7 +35,7 @@ test('the main deck is the mainR set and the preview beside the paper is the Res
 test('the 047 document fills the space beside the research paper, under the section text', () => {
   // The second document is content: a key in papers, shown with the section's paper.
   assert.equal(site.pages.research.project.sidePaper, '047')
-  assert.equal(site.papers['047'].title, '047')
+  assert.equal(site.papers['047'].title, 'Project Poster')
   assert.equal(site.papers['047'].url, '/media/research/047.pdf')
   assert.match(pagesSource, /\{research\.project\.sidePaper && <PaperWidget paper=\{papers\[research\.project\.sidePaper\]\} \/>\}/)
   // The text stands above the document in one column, and that column is left of both
@@ -54,7 +54,12 @@ test('each paper panel draws its paper pages, scrollable like the resume', () =>
   assert.ok(pagesSource.includes('{paper.url && <PdfViewer url={paper.url} label={`${paper.title}, as a PDF`} noun="paper" />}'))
   // The same viewer the resume uses, in the panel above the Open paper link.
   assert.match(css, /\.resume-viewer \{ position: relative; aspect-ratio: 8\.5 \/ 11; overflow: auto;/)
-  assert.match(css, /\.paper-widget > \.resume-viewer \{ margin-top: 24px; \}/)
+  // The panels lead with their names and reach their pages at once — the top stays
+  // tight (no label line, no empty-citation gap) so the document fills the panel.
+  assert.match(css, /\.paper-widget \{[^}]*padding: 20px 28px 28px;/)
+  assert.match(css, /\.paper-widget > \.resume-viewer \{ margin-top: 16px; \}/)
+  assert.doesNotMatch(pagesSource, /paper-label/)
+  assert.match(pagesSource, /<h3>\{paper\.title\}<\/h3>\{paper\.citation && <p>\{paper\.citation\}<\/p>\}/)
 })
 
 test('the GHP row is a photo deck beside its two videos', () => {

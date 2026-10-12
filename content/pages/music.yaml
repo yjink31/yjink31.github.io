@@ -57,7 +57,7 @@ films:
     # The still shown before playback starts.
     poster: /media/music/BachPrelude1-poster.jpg
     # The description beside the player. Leave it empty to hide it.
-    caption: J.S. Bach, Prelude.
+    caption: J.S. Bach, Prelude Viola
     # true while this is demo footage rather than a performance; it repeats.
     demo: false
   - title: Solo repertoire

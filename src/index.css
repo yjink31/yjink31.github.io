@@ -422,11 +422,12 @@ button:active, .button:active { transform: translateY(1px); }
    paper panel, so the panel always reads below the project image rather than beside
    its top edge. */
 .research-project > .research-paper-slot { grid-column: 9 / 13; grid-row: 2; align-self: start; display: grid; gap: 24px; align-content: start; }
-.paper-widget { background: var(--surface-raised); padding: 28px; border-top: 2px solid var(--text); }
-.paper-label { font-size: 14px; color: var(--secondary); }
-.paper-widget h3 { font-size: 25px; line-height: 1.2; letter-spacing: -0.8px; margin-top: 32px; }
-.paper-widget > p { font-size: 14px; margin-top: 16px; color: var(--secondary); }
-.paper-widget > .resume-viewer { margin-top: 24px; }
+/* The panel leads with its name and reaches its pages at once: no label line and no
+   empty-citation gap, so the document fills the panel instead of sitting under chrome. */
+.paper-widget { background: var(--surface-raised); padding: 20px 28px 28px; border-top: 2px solid var(--text); }
+.paper-widget h3 { font-size: 25px; line-height: 1.2; letter-spacing: -0.8px; }
+.paper-widget > p { font-size: 14px; margin-top: 10px; color: var(--secondary); }
+.paper-widget > .resume-viewer { margin-top: 16px; }
 .paper-open { margin-top: 28px; }
 .paper-unavailable { display: flex; align-items: center; justify-content: space-between; margin-top: 36px; font-size: 14px; color: var(--secondary); }
 .ghp-section { margin-top: 140px; }
@@ -572,7 +573,7 @@ html[data-transition] .art-image-link { transition: none; transform: none; }
   .research-project > .image-deck, .research-project-side, .research-project > .research-paper-slot { grid-column: 1; grid-row: auto; }
   .research-project-copy h2 { font-size: 30px; }
   .research-project-copy { padding: 0; }
-  .paper-widget { padding: 24px; }
+  .paper-widget { padding: 18px 24px 24px; }
   .ghp-section { margin-top: 72px; }
   .ghp-section > h2, .smaller-projects > h2 { font-size: 40px; letter-spacing: -2px; margin-bottom: 28px; }
   .ghp-images, .ghp-copy { grid-template-columns: 1fr; gap: 24px; }

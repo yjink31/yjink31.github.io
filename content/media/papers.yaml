@@ -17,17 +17,17 @@
 
 papers:
   project:
-    title: Project paper
+    title: Research Paper
     # Optional authors, year, or publication line.
     citation:
     url: /media/research/RESPONSE_OF_STF_INFLUENCED_LATTICE_STRUCTURES_UNDER_COMPLEX_LOADING.pdf
   ghp:
-    title: GHP paper
+    title: GHP Tunnel Design Proposal
     citation:
     url: /media/research/GHP-CE2026-001.pdf
   # The 047 document, shown to the left of the project paper. The key is quoted
   # so it stays the name "047", not a number.
   '047':
-    title: '047'
+    title: Project Poster
     citation:
     url: /media/research/047.pdf

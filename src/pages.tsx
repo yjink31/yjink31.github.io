@@ -167,7 +167,7 @@ export function MusicPage() {
 }
 
 function PaperWidget({ paper }: { paper: Paper }) {
-  return <div className="paper-widget" data-light><span className="paper-label">Research paper</span><h3>{paper.title}</h3><p>{paper.citation ?? messages.paperMissing}</p>{paper.url && <PdfViewer url={paper.url} label={`${paper.title}, as a PDF`} noun="paper" />}{paper.url ? <a data-magnetic data-cursor="Read paper" className="text-link paper-open" href={paper.url} target="_blank" rel="noreferrer">Open paper <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a> : <span className="paper-unavailable">Document pending</span>}</div>
+  return <div className="paper-widget" data-light><h3>{paper.title}</h3>{paper.citation && <p>{paper.citation}</p>}{paper.url && <PdfViewer url={paper.url} label={`${paper.title}, as a PDF`} noun="paper" />}{paper.url ? <a data-magnetic data-cursor="Read paper" className="text-link paper-open" href={paper.url} target="_blank" rel="noreferrer">Open paper <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a> : <span className="paper-unavailable">Document pending</span>}</div>
 }
 
 export function ResearchPage() {

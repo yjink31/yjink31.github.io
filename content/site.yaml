@@ -61,10 +61,10 @@ appearance:
 navigation:
   - label: Art
     href: /
-  - label: Music
-    href: /music
   - label: Research
     href: /research
+  - label: Music
+    href: /music
 
 # -----------------------------------------------------------------------------
 # Layout
